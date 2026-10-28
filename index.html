@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TOPJOBSEEKERS  – Overseas & Local Job Recruitment</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="enhancements.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar" id="navbar">
+    <div class="container nav-inner">
+      <a href="#" class="logo">
+        <span class="logo-icon"><i class="fas fa-globe-africa"></i></span>
+        <span>TOP<strong>JOB</strong> <em>SEEKERS</em></span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#jobs">Jobs</a></li>
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#categories">Categories</a></li>
+        <li><a href="#placements">Placements</a></li>
+        <li><a href="#community">Community</a></li>
+        <li><a href="#cv-upload" class="btn btn-outline">Submit CV</a></li>
+        <li><a href="#" data-wa="channel" class="btn btn-whatsapp-nav"><i class="fab fa-whatsapp"></i> Join WhatsApp</a></li>
+        <li><a href="login.html" class="btn btn-ghost-dark"><i class="fas fa-user-circle"></i> Portal Login</a></li>
+        <li><a href="#contact" class="btn btn-primary">Post a Job</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero" id="home">
+    <div class="hero-bg-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+    </div>
+    <div class="container hero-inner">
+      <div class="hero-text">
+        <span class="hero-eyebrow"><i class="fas fa-map-marker-alt"></i> Jobs in Kenya &amp; Worldwide</span>
+        <h1>Your Career, <br /><span class="highlight">Beyond Borders</span></h1>
+        <p class="hero-sub">Fresh job openings in Kenya every day, plus verified opportunities in the Middle East, Europe, Asia and beyond. Click a job, upload your CV, and our team takes it from there.</p>
+        <div class="hero-actions">
+          <a href="#jobs" class="btn btn-primary btn-lg">Browse Jobs <i class="fas fa-arrow-right"></i></a>
+          <a href="#cv-upload" class="btn btn-ghost btn-lg">Upload Your CV</a>
+        </div>
+        <div class="hero-trust">
+          <div class="trust-item"><span class="trust-num" data-target="4200">0</span><span>+</span><small>Placed Abroad</small></div>
+          <div class="trust-divider"></div>
+          <div class="trust-item"><span class="trust-num" data-target="120">0</span><span>+</span><small>Partner Companies</small></div>
+          <div class="trust-divider"></div>
+          <div class="trust-item"><span class="trust-num" data-target="18">0</span><span>+</span><small>Countries</small></div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-photo-card" id="heroPhotoWrap">
+          <img id="heroPhoto" class="hero-photo" src="" alt="" />
+          <div class="hero-photo-skeleton"><i class="fas fa-spinner fa-spin"></i></div>
+          <div class="floating-tag tag-1"><i class="fas fa-briefcase"></i> 340 New Jobs</div>
+          <div class="floating-tag tag-2"><i class="fas fa-check-circle"></i> Verified Employers</div>
+          <div class="hero-photo-stat">
+            <span class="hero-photo-stat-num">4,200+</span>
+            <span class="hero-photo-stat-label">Kenyans placed abroad</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-wave">
+      <svg viewBox="0 0 1440 80" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+        <path d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z" fill="#f4f8ff"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ===== MARQUEE STRIP (flag + country slide together) ===== -->
+  <div class="marquee-strip">
+    <div class="marquee-track" id="marqueeTrack">
+      <!-- populated by script.js from the same country list, flag glued to name -->
+    </div>
+  </div>
+
+  <!-- ===== SUCCESSFUL PLACEMENTS (added from Dashboard → Placements; hidden until you add one) ===== -->
+  <section class="placements-section section hidden" id="placements">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-eyebrow">Success Stories</span>
+        <h2>Our Latest <span class="highlight">Successful Placements</span></h2>
+        <p>Real Kenyans who got the job. You could be next.</p>
+      </div>
+      <div class="placements-grid" id="placementsGrid"></div>
+    </div>
+  </section>
+
+  <!-- ===== JOB SEARCH ===== -->
+  <section class="search-section" id="jobs">
+    <div class="container">
+      <div class="search-box">
+        <div class="search-field">
+          <i class="fas fa-search"></i>
+          <input type="text" id="searchInput" placeholder="Job title, keyword, or skill..." />
+        </div>
+        <div class="search-field">
+          <i class="fas fa-map-marker-alt"></i>
+          <select id="locationFilter">
+            <option value="">Kenya &amp; Worldwide</option>
+            <option value="Kenya">Kenya (Local)</option>
+            <option value="UAE">UAE</option>
+            <option value="Qatar">Qatar</option>
+            <option value="Saudi Arabia">Saudi Arabia</option>
+            <option value="United Kingdom">United Kingdom</option>
+            <option value="Germany">Germany</option>
+            <option value="Canada">Canada</option>
+          </select>
+        </div>
+        <div class="search-field">
+          <i class="fas fa-layer-group"></i>
+          <select id="categoryFilter">
+            <option value="">All Categories</option>
+            <option value="Healthcare">Healthcare</option>
+            <option value="Construction">Construction</option>
+            <option value="Hospitality">Hospitality</option>
+            <option value="IT">Information Technology</option>
+            <option value="Finance">Finance</option>
+            <option value="Education">Education</option>
+            <option value="Domestic">Domestic Staff</option>
+            <option value="Logistics">Logistics &amp; Transport</option>
+            <option value="Sales">Sales &amp; Marketing</option>
+            <option value="Admin">Admin &amp; Office</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" id="searchBtn">Search Jobs</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== JOB CATEGORIES ===== -->
+  <section class="categories-section section" id="categories">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-eyebrow">Explore by Sector</span>
+        <h2>In-Demand <span class="highlight">Job Categories</span></h2>
+        <p>From skilled trades to professional services — find your industry placement overseas or within Kenya.</p>
+      </div>
+      <div class="categories-grid">
+        <div class="cat-card" data-category="Healthcare">
+          <div class="cat-icon" style="--c:#1E6FD9"><i class="fas fa-heartbeat"></i></div>
+          <h3>Healthcare</h3>
+          <p>Nurses, doctors, caregivers & lab technicians</p>
+          <span class="cat-count">82 Open Roles</span>
+        </div>
+        <div class="cat-card" data-category="Construction">
+          <div class="cat-icon" style="--c:#0A5CB8"><i class="fas fa-hard-hat"></i></div>
+          <h3>Construction</h3>
+          <p>Engineers, masons, welders & site supervisors</p>
+          <span class="cat-count">64 Open Roles</span>
+        </div>
+        <div class="cat-card" data-category="Hospitality">
+          <div class="cat-icon" style="--c:#F5A623"><i class="fas fa-concierge-bell"></i></div>
+          <h3>Hospitality</h3>
+          <p>Hotel staff, chefs, waiters & housekeeping</p>
+          <span class="cat-count">56 Open Roles</span>
+        </div>
+        <div class="cat-card" data-category="IT">
+          <div class="cat-icon" style="--c:#1E6FD9"><i class="fas fa-laptop-code"></i></div>
+          <h3>Information Technology</h3>
+          <p>Developers, network engineers & IT support</p>
+          <span class="cat-count">48 Open Roles</span>
+        </div>
+        <div class="cat-card" data-category="Finance">
+          <div class="cat-icon" style="--c:#0A5CB8"><i class="fas fa-chart-line"></i></div>
+          <h3>Finance & Banking</h3>
+          <p>Accountants, analysts & financial advisors</p>
+          <span class="cat-count">35 Open Roles</span>
+        </div>
+        <div class="cat-card" data-category="Education">
+          <div class="cat-icon" style="--c:#1E6FD9"><i class="fas fa-chalkboard-teacher"></i></div>
+          <h3>Education</h3>
+          <p>Teachers, tutors & academic staff</p>
+          <span class="cat-count">29 Open Roles</span>
+        </div>
+        <div class="cat-card" data-category="Domestic">
+          <div class="cat-icon" style="--c:#F5A623"><i class="fas fa-home"></i></div>
+          <h3>Domestic Staff</h3>
+          <p>House managers, nannies & care workers</p>
+          <span class="cat-count">41 Open Roles</span>
+        </div>
+        <div class="cat-card" data-category="Logistics">
+          <div class="cat-icon" style="--c:#0A5CB8"><i class="fas fa-truck"></i></div>
+          <h3>Logistics & Transport</h3>
+          <p>Drivers, logistics coordinators & warehouse staff</p>
+          <span class="cat-count">37 Open Roles</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== JOB LISTINGS ===== -->
+  <section class="jobs-section section" id="jobsList" style="background:#f4f8ff;">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-eyebrow">Latest Opportunities</span>
+        <h2>Open <span class="highlight">Job Listings</span></h2>
+        <p>Jobs in Kenya and abroad, updated daily. Click any job to see the details and apply with your CV.</p>
+      </div>
+      <div class="jobs-toolbar">
+        <div class="jobs-tabs" role="tablist" aria-label="Job region">
+          <button class="jobs-tab active" data-tab="all" role="tab">All Jobs <span class="tab-count" id="tabCountAll">0</span></button>
+          <button class="jobs-tab" data-tab="kenya" role="tab">🇰🇪 Kenya <span class="tab-count" id="tabCountKenya">0</span></button>
+          <button class="jobs-tab" data-tab="international" role="tab">🌍 International <span class="tab-count" id="tabCountIntl">0</span></button>
+        </div>
+        <span class="jobs-count" id="jobsCount"></span>
+      </div>
+      <div class="jobs-grid" id="jobsGrid">
+        <div class="jobs-empty"><i class="fas fa-spinner fa-spin"></i> Loading jobs...</div>
+      </div>
+      <div class="center-action hidden" id="jobsMoreWrap">
+        <button class="btn btn-outline btn-lg" id="jobsMoreBtn">Show more jobs <i class="fas fa-chevron-down"></i></button>
+      </div>
+      <div class="center-action">
+        <a href="#cv-upload" class="btn btn-primary btn-lg">Don't see your role? Submit your CV <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== HOW IT WORKS ===== -->
+  <section class="how-section section" id="how-it-works">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-eyebrow">Simple Process</span>
+        <h2>How We Get <span class="highlight">You Placed</span></h2>
+        <p>A transparent, step-by-step process from CV submission to landing overseas.</p>
+      </div>
+      <div class="steps-track">
+        <div class="step-card">
+          <div class="step-num">01</div>
+          <div class="step-icon"><i class="fas fa-file-alt"></i></div>
+          <h3>Submit Your CV</h3>
+          <p>Upload your CV through our secure portal. Our team reviews it within 48 hours and provides professional feedback.</p>
+        </div>
+        <div class="step-arrow"><i class="fas fa-chevron-right"></i></div>
+        <div class="step-card">
+          <div class="step-num">02</div>
+          <div class="step-icon"><i class="fas fa-user-check"></i></div>
+          <h3>Profile Matching</h3>
+          <p>We match your skills, experience, and preferences to available roles across our network of 120+ verified employers.</p>
+        </div>
+        <div class="step-arrow"><i class="fas fa-chevron-right"></i></div>
+        <div class="step-card">
+          <div class="step-num">03</div>
+          <div class="step-icon"><i class="fas fa-handshake"></i></div>
+          <h3>Interview & Offer</h3>
+          <p>We prepare you for interviews, assist with document verification, and guide you through the employer offer process.</p>
+        </div>
+        <div class="step-arrow"><i class="fas fa-chevron-right"></i></div>
+        <div class="step-card">
+          <div class="step-num">04</div>
+          <div class="step-icon"><i class="fas fa-plane-departure"></i></div>
+          <h3>Visa & Deployment</h3>
+          <p>Our visa processing team handles work permits and travel arrangements. You depart with confidence and support.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CV UPLOAD ===== -->
+  <section class="cv-section section" id="cv-upload" style="background: linear-gradient(135deg, #0A1628 0%, #1E3A5F 100%);">
+    <div class="container cv-inner">
+      <div class="cv-text">
+        <span class="section-eyebrow light">Open Market Recruitment</span>
+        <h2>Let Employers <span class="highlight-gold">Find You</span></h2>
+        <p>Don't wait for the perfect job listing. Submit your CV to our open talent market and get discovered by employers looking for Kenyan talent worldwide.</p>
+        <ul class="cv-perks">
+          <li><i class="fas fa-check-circle"></i> Free professional CV review</li>
+          <li><i class="fas fa-check-circle"></i> Added to our live employer database</li>
+          <li><i class="fas fa-check-circle"></i> Career counselling included</li>
+          <li><i class="fas fa-check-circle"></i> Document & visa guidance</li>
+        </ul>
+      </div>
+      <div class="cv-form-wrap">
+        <form class="cv-form" id="cvForm" onsubmit="return false;">
+          <h3>Submit Your CV</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Full Name *</label>
+              <input type="text" id="fname" placeholder="e.g. Jane Wanjiku" required />
+            </div>
+            <div class="form-group">
+              <label>Phone Number *</label>
+              <input type="tel" id="phone" placeholder="+254 7XX XXX XXX" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Email Address *</label>
+            <input type="email" id="email" placeholder="jane@example.com" required />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Preferred Destination</label>
+              <select id="destination">
+                <option value="">Select country</option>
+                <option>UAE</option><option>Qatar</option><option>Saudi Arabia</option>
+                <option>United Kingdom</option><option>Germany</option><option>Canada</option>
+                <option>Singapore</option><option>Australia</option><option>Kuwait</option>
+                <option>Open to Any</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Job Category</label>
+              <select id="jobCat">
+                <option value="">Select category</option>
+                <option>Healthcare</option><option>Construction</option><option>Hospitality</option>
+                <option>Information Technology</option><option>Finance</option>
+                <option>Education</option><option>Domestic Staff</option><option>Logistics</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Upload CV (PDF or Word) *</label>
+            <div class="file-drop" id="fileDrop">
+              <i class="fas fa-cloud-upload-alt"></i>
+              <span id="fileLabel">Drag & drop your CV or <strong>click to browse</strong></span>
+              <input type="file" id="cvFile" accept=".pdf,.doc,.docx" hidden />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Brief Introduction</label>
+            <textarea id="intro" rows="3" placeholder="Tell us about your experience and what you're looking for..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-full" id="submitCvBtn">
+            <i class="fas fa-paper-plane"></i> Submit My CV
+          </button>
+          <p class="form-note">Your information is secure and never shared without your consent.</p>
+          <div id="cvSuccess" class="cv-success hidden">
+            <i class="fas fa-check-circle"></i> Thank you! We'll review your CV and contact you within 48 hours.
+          </div>
+          <div id="cvError" class="cv-error hidden">
+            <i class="fas fa-exclamation-circle"></i> <span id="cvErrorText">Something went wrong. Please try again.</span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TESTIMONIALS ===== -->
+  <section class="testimonials-section section" id="testimonials">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-eyebrow">Success Stories</span>
+        <h2>Kenyans <span class="highlight">Placed Worldwide</span></h2>
+        <p>Real people. Real placements. Hear from those who made the move.</p>
+      </div>
+      <div class="testimonials-grid" id="testimonialsGrid">
+        <!-- Loaded from Supabase 'testimonials' table by script.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== EMPLOYERS SECTION ===== -->
+  <section class="employers-section section" style="background:#f4f8ff;">
+    <div class="container">
+      <div class="emp-split">
+        <div class="emp-text">
+          <span class="section-eyebrow">For Employers</span>
+          <h2>Hire Verified <span class="highlight">Kenyan Talent</span></h2>
+          <p>Access a pre-screened pool of skilled Kenyan professionals ready for deployment. We handle document verification, background checks, and travel arrangements.</p>
+          <ul class="emp-list">
+            <li><i class="fas fa-users"></i> Access 5,000+ screened candidates</li>
+            <li><i class="fas fa-shield-alt"></i> Background-verified profiles</li>
+            <li><i class="fas fa-clock"></i> Fast placement — avg. 3 weeks</li>
+            <li><i class="fas fa-headset"></i> Post-placement support</li>
+          </ul>
+          <a href="login.html" class="btn btn-primary">Employer Portal Login</a>
+        </div>
+        <div class="emp-stats">
+          <div class="emp-stat-card">
+            <span class="big-num">98<small>%</small></span>
+            <span>Client Satisfaction</span>
+          </div>
+          <div class="emp-stat-card">
+            <span class="big-num">3<small>wks</small></span>
+            <span>Average Placement Time</span>
+          </div>
+          <div class="emp-stat-card">
+            <span class="big-num">18<small>+</small></span>
+            <span>Destination Countries</span>
+          </div>
+          <div class="emp-stat-card">
+            <span class="big-num">120<small>+</small></span>
+            <span>Partner Employers</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== WHATSAPP COMMUNITY ===== -->
+  <section class="community-section section" id="community">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-eyebrow light">Stay Connected</span>
+        <h2>Never Miss a <span class="highlight-gold">New Job</span></h2>
+        <p>We share fresh vacancies, interview tips and hiring updates on WhatsApp.</p>
+      </div>
+      <div class="community-grid">
+        <div class="community-card">
+          <div class="community-icon"><i class="fab fa-whatsapp"></i></div>
+          <h3>WhatsApp Channel</h3>
+          <p>One-way broadcasts. Quiet, quick and only the jobs.</p>
+          <ul>
+            <li><i class="fas fa-bell"></i> Daily job alerts, Kenya &amp; abroad</li>
+            <li><i class="fas fa-bolt"></i> Be first to apply</li>
+            <li><i class="fas fa-user-secret"></i> Your number stays private</li>
+          </ul>
+          <a href="#" data-wa="channel" class="btn btn-whatsapp btn-lg"><i class="fab fa-whatsapp"></i> Join the Channel</a>
+        </div>
+        <div class="community-card">
+          <div class="community-icon"><i class="fas fa-users"></i></div>
+          <h3>WhatsApp Group</h3>
+          <p>Chat with other job seekers and our team.</p>
+          <ul>
+            <li><i class="fas fa-comments"></i> Ask questions, get answers</li>
+            <li><i class="fas fa-lightbulb"></i> CV and interview tips</li>
+            <li><i class="fas fa-handshake"></i> Meet others on the same journey</li>
+          </ul>
+          <a href="#" data-wa="group" class="btn btn-whatsapp btn-lg"><i class="fas fa-users"></i> Join the Group</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CONTACT ===== -->
+  <section class="contact-section section" id="contact">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-eyebrow">Get In Touch</span>
+        <h2>We're Here to <span class="highlight">Help</span></h2>
+        <p>Whether you're a job seeker or an employer, reach out and we'll respond within 24 hours.</p>
+      </div>
+      <div class="contact-grid">
+        <div class="contact-info">
+          <div class="contact-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <div>
+              <strong>Office Location</strong>
+              <span>Westlands, Nairobi, Kenya<br/>P.O. Box 12345 – 00100</span>
+            </div>
+          </div>
+          <div class="contact-item">
+            <i class="fas fa-phone-alt"></i>
+            <div>
+              <strong>Phone / WhatsApp</strong>
+              <span>+254 748801685<br/>+254 748801685</span>
+            </div>
+          </div>
+          <div class="contact-item">
+            <i class="fas fa-envelope"></i>
+            <div>
+              <strong>Email Us</strong>
+              <span>info@globalworkkenya.com<br/>topjobsseekers@gmail.com</span>
+            </div>
+          </div>
+          <div class="contact-item">
+            <i class="fas fa-clock"></i>
+            <div>
+              <strong>Working Hours</strong>
+              <span>Mon – Fri: 8:00 AM – 6:00 PM<br/>Sat: 9:00 AM – 1:00 PM</span>
+            </div>
+          </div>
+          <div class="social-links">
+            <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" data-wa="chat" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+            <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          </div>
+        </div>
+        <form class="contact-form" id="contactForm" onsubmit="return false;">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Your Name</label>
+              <input type="text" placeholder="Full Name" />
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" placeholder="email@example.com" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Subject</label>
+            <select>
+              <option>Job Seeker Inquiry</option>
+              <option>Employer / Recruitment</option>
+              <option>Visa & Documentation</option>
+              <option>Partnership Opportunity</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Message</label>
+            <textarea rows="5" placeholder="Tell us how we can help..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-full" id="contactSubmitBtn">
+            Send Message <i class="fas fa-paper-plane"></i>
+          </button>
+          <div id="contactSuccess" class="cv-success hidden">
+            <i class="fas fa-check-circle"></i> Message sent! We'll get back to you within 24 hours.
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <a href="#" class="logo light">
+          <span class="logo-icon"><i class="fas fa-globe-africa"></i></span>
+          <span>Global<strong>Work</strong> <em>Kenya</em></span>
+        </a>
+        <p>Kenya's trusted recruitment partner for overseas and local job placements. Licensed by the Government of Kenya – NITA Accredited.</p>
+        <div class="footer-badges">
+          <span><i class="fas fa-certificate"></i> Gov't Licensed</span>
+          <span><i class="fas fa-shield-alt"></i> Verified Recruiter</span>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Job Seekers</h4>
+        <ul>
+          <li><a href="#jobs">Browse All Jobs</a></li>
+          <li><a href="#cv-upload">Submit Your CV</a></li>
+          <li><a href="#how-it-works">How It Works</a></li>
+          <li><a href="login.html">Check Application Status</a></li>
+          <li><a href="#" data-wa="channel">WhatsApp Job Channel</a></li>
+          <li><a href="#" data-wa="group">WhatsApp Group</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Employers</h4>
+        <ul>
+          <li><a href="#contact">Post a Job</a></li>
+          <li><a href="login.html">Search Candidates</a></li>
+          <li><a href="#">Recruitment Services</a></li>
+          <li><a href="#">Partnership Programs</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Top Destinations</h4>
+        <ul>
+          <li><a href="#">Jobs in UAE</a></li>
+          <li><a href="#">Jobs in Qatar</a></li>
+          <li><a href="#">Jobs in Saudi Arabia</a></li>
+          <li><a href="#">Jobs in UK</a></li>
+          <li><a href="#">Jobs in Germany</a></li>
+          <li><a href="#">Jobs in Canada</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        <span>© 2026 TOPJOBSEEKERS. All rights reserved.</span>
+        <div class="footer-legal">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Cookie Policy</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== BACK TO TOP ===== -->
+  <button class="back-top" id="backTop" aria-label="Back to top"><i class="fas fa-chevron-up"></i></button>
+
+  <!-- ===== JOB DETAILS + APPLY MODAL ===== -->
+  <div class="job-modal" id="jobModal" role="dialog" aria-modal="true" aria-labelledby="jmTitle" aria-hidden="true">
+    <div class="jm-dialog">
+      <button class="jm-close" data-close-modal aria-label="Close"><i class="fas fa-times"></i></button>
+      <div class="job-modal-body" id="jobModalBody"></div>
+    </div>
+  </div>
+
+  <!-- ===== CHAT WIDGET ===== -->
+  <button class="chat-toggle-btn" id="chatToggleBtn" aria-label="Chat with us">
+    <i class="fas fa-comment-dots"></i>
+  </button>
+  <div class="chat-panel" id="chatPanel">
+    <div class="chat-panel-header">
+      <div>
+        <strong>TOPJOBSEEKERS Assistant</strong>
+        <span class="chat-status"><i class="fas fa-circle"></i> Online</span>
+      </div>
+      <button id="chatCloseBtn" aria-label="Close chat"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <form class="chat-input-row" id="chatForm">
+      <input type="text" id="chatInput" placeholder="Type your question..." autocomplete="off" />
+      <button type="submit" aria-label="Send"><i class="fas fa-paper-plane"></i></button>
+    </form>
+  </div>
+
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="supabase-config.js"></script>
+  <script src="site-config.js"></script>
+  <script src="script.js"></script>
+  <script src="jobs.js"></script>
+  <script src="chat-widget.js"></script>
+</body>
+</html>
