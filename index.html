@@ -3,37 +3,69 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TOPJOBSEEKERS  – Overseas & Local Job Recruitment</title>
+  <title>TOPJOBSEEKERS – Jobs in Kenya &amp; Abroad | Recruitment Agency</title>
+  <meta name="description" content="Find jobs in Kenya and abroad. Click a job, upload your CV and our recruitment team takes it from there. Join our WhatsApp channel for daily job alerts." />
+  <meta name="theme-color" content="#14382f" />
+  <meta property="og:title" content="TOPJOBSEEKERS – Jobs in Kenya &amp; Abroad" />
+  <meta property="og:description" content="Fresh jobs in Kenya and overseas. Apply with your CV in minutes." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2314382f'/%3E%3Ctext x='50' y='68' font-size='56' text-anchor='middle' fill='%23e8a33d'%3E%F0%9F%8C%8D%3C/text%3E%3C/svg%3E" />
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="enhancements.css" />
+  <link rel="stylesheet" href="polish.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 <body>
 
-  <!-- ===== NAVBAR ===== -->
-  <nav class="navbar" id="navbar">
+  <a class="skip-link" href="#jobsList">Skip to jobs</a>
+
+  <!-- ===== NAVBAR (desktop) ===== -->
+  <nav class="navbar" id="navbar" aria-label="Main">
     <div class="container nav-inner">
-      <a href="#" class="logo">
+      <a href="#home" class="logo" aria-label="TOPJOBSEEKERS home">
         <span class="logo-icon"><i class="fas fa-globe-africa"></i></span>
-        <span>TOP<strong>JOB</strong> <em>SEEKERS</em></span>
+        <span class="logo-text"><b>TOPJOB</b><i>SEEKERS</i></span>
       </a>
       <ul class="nav-links" id="navLinks">
-        <li><a href="#jobs">Jobs</a></li>
+        <li><a href="#jobsList">Jobs</a></li>
         <li><a href="#how-it-works">How It Works</a></li>
         <li><a href="#categories">Categories</a></li>
         <li><a href="#placements">Placements</a></li>
         <li><a href="#community">Community</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li class="nav-sep" aria-hidden="true"></li>
         <li><a href="#cv-upload" class="btn btn-outline">Submit CV</a></li>
-        <li><a href="#" data-wa="channel" class="btn btn-whatsapp-nav"><i class="fab fa-whatsapp"></i> Join WhatsApp</a></li>
-        <li><a href="login.html" class="btn btn-ghost-dark"><i class="fas fa-user-circle"></i> Portal Login</a></li>
+        <li><a href="#" data-wa="channel" class="btn btn-whatsapp-nav"><i class="fab fa-whatsapp"></i> WhatsApp</a></li>
+        <li><a href="login.html" class="btn btn-ghost-dark"><i class="fas fa-user-circle"></i> Login</a></li>
         <li><a href="#contact" class="btn btn-primary">Post a Job</a></li>
       </ul>
-      <button class="hamburger" id="hamburger" aria-label="Menu">
-        <span></span><span></span><span></span>
-      </button>
     </div>
   </nav>
+
+  <!-- Floating menu button (left) + slide-in drawer. Kept outside <nav> so they stay fixed while scrolling. -->
+  <button class="nav-fab" id="navFab" aria-label="Open menu" aria-expanded="false" aria-controls="mobileDrawer"><span></span><span></span><span></span></button>
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+  <aside class="mobile-drawer" id="mobileDrawer" aria-label="Menu">
+    <div class="drawer-brand">TOPJOB<span>SEEKERS</span></div>
+    <ul class="drawer-links">
+      <li style="--i:0"><a href="#jobsList"><i class="fas fa-briefcase"></i> Jobs</a></li>
+      <li style="--i:1"><a href="#hot-alerts"><i class="fas fa-fire"></i> Hot Alerts</a></li>
+      <li style="--i:2"><a href="#how-it-works"><i class="fas fa-route"></i> How It Works</a></li>
+      <li style="--i:3"><a href="#categories"><i class="fas fa-th-large"></i> Categories</a></li>
+      <li style="--i:4"><a href="#placements"><i class="fas fa-trophy"></i> Placements</a></li>
+      <li style="--i:5"><a href="#community"><i class="fab fa-whatsapp"></i> Community</a></li>
+      <li style="--i:6"><a href="#faq"><i class="fas fa-question-circle"></i> FAQ</a></li>
+      <li style="--i:7"><a href="#contact"><i class="fas fa-envelope"></i> Contact</a></li>
+    </ul>
+    <div class="drawer-cta">
+      <a href="#cv-upload" class="btn btn-primary"><i class="fas fa-file-upload"></i> Submit CV</a>
+      <a href="#" data-wa="channel" class="btn btn-whatsapp-nav"><i class="fab fa-whatsapp"></i> Join WhatsApp</a>
+      <a href="login.html" class="btn btn-ghost-dark"><i class="fas fa-user-circle"></i> Portal Login</a>
+      <a href="#contact" class="btn btn-outline">Post a Job</a>
+    </div>
+    <div class="drawer-foot"><a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a> · <a href="cookie-policy.html">Cookies</a></div>
+  </aside>
 
   <!-- ===== HERO ===== -->
   <section class="hero" id="home">
@@ -46,6 +78,18 @@
         <span class="hero-eyebrow"><i class="fas fa-map-marker-alt"></i> Jobs in Kenya &amp; Worldwide</span>
         <h1>Your Career, <br /><span class="highlight">Beyond Borders</span></h1>
         <p class="hero-sub">Fresh job openings in Kenya every day, plus verified opportunities in the Middle East, Europe, Asia and beyond. Click a job, upload your CV, and our team takes it from there.</p>
+        <div class="hero-choice">
+          <button class="choice-card" type="button" data-goto="kenya">
+            <span class="choice-flag"><img src="images/flag-kenya.png" alt="" onerror="this.onerror=function(){this.remove()};this.src='https://flagcdn.com/w160/ke.png'" /></span>
+            <span><strong>Jobs in Kenya</strong><small id="heroKenyaCount">Browse local roles</small></span>
+            <i class="fas fa-arrow-right go"></i>
+          </button>
+          <button class="choice-card" type="button" data-goto="international">
+            <span class="choice-flag"><i class="fas fa-globe-africa"></i><img src="images/flag-world.png" alt="" onerror="this.remove()" /></span>
+            <span><strong>Jobs Abroad</strong><small id="heroIntlCount">Browse overseas roles</small></span>
+            <i class="fas fa-arrow-right go"></i>
+          </button>
+        </div>
         <div class="hero-actions">
           <a href="#jobs" class="btn btn-primary btn-lg">Browse Jobs <i class="fas fa-arrow-right"></i></a>
           <a href="#cv-upload" class="btn btn-ghost btn-lg">Upload Your CV</a>
@@ -62,7 +106,7 @@
         <div class="hero-photo-card" id="heroPhotoWrap">
           <img id="heroPhoto" class="hero-photo" src="" alt="" />
           <div class="hero-photo-skeleton"><i class="fas fa-spinner fa-spin"></i></div>
-          <div class="floating-tag tag-1"><i class="fas fa-briefcase"></i> 340 New Jobs</div>
+          <div class="floating-tag tag-1"><i class="fas fa-briefcase"></i> <span id="heroJobTag">Fresh jobs daily</span></div>
           <div class="floating-tag tag-2"><i class="fas fa-check-circle"></i> Verified Employers</div>
           <div class="hero-photo-stat">
             <span class="hero-photo-stat-num">4,200+</span>
@@ -84,6 +128,17 @@
       <!-- populated by script.js from the same country list, flag glued to name -->
     </div>
   </div>
+
+  <!-- ===== HOT ALERTS (post from Dashboard → Hot Alert; hidden when none are active) ===== -->
+  <section class="hot-section hidden" id="hot-alerts" aria-labelledby="hotTitle">
+    <div class="container">
+      <div class="hot-head">
+        <h2 class="hot-title" id="hotTitle"><span class="hot-pulse"></span> Hot Job Alerts</h2>
+        <span class="hot-sub">Urgent openings. Apply quickly, these close soon.</span>
+      </div>
+      <div class="hot-track" id="hotTrack"></div>
+    </div>
+  </section>
 
   <!-- ===== SUCCESSFUL PLACEMENTS (added from Dashboard → Placements; hidden until you add one) ===== -->
   <section class="placements-section section hidden" id="placements">
@@ -148,53 +203,85 @@
         <p>From skilled trades to professional services — find your industry placement overseas or within Kenya.</p>
       </div>
       <div class="categories-grid">
-        <div class="cat-card" data-category="Healthcare">
-          <div class="cat-icon" style="--c:#1E6FD9"><i class="fas fa-heartbeat"></i></div>
-          <h3>Healthcare</h3>
-          <p>Nurses, doctors, caregivers & lab technicians</p>
-          <span class="cat-count"> Open Roles</span>
+        <div class="cat-card" data-category="Healthcare" tabindex="0" role="button" aria-expanded="false">
+          <div class="cat-media"><img src="images/cat-healthcare.jpg" alt="" loading="lazy" onerror="this.parentElement.classList.add('empty')" /></div>
+          <div class="cat-body">
+            <div class="cat-icon" style="--c:#1E6FD9"><i class="fas fa-heartbeat"></i></div>
+            <h3>Healthcare</h3>
+            <p>Nurses, doctors, caregivers & lab technicians</p>
+            <div class="cat-top"><span class="cat-count">Open roles</span><span class="cat-caret"><i class="fas fa-chevron-down"></i></span></div>
+            <div class="cat-more"><div><div class="cat-more-inner"></div></div></div>
+          </div>
         </div>
-        <div class="cat-card" data-category="Construction">
-          <div class="cat-icon" style="--c:#0A5CB8"><i class="fas fa-hard-hat"></i></div>
-          <h3>Construction</h3>
-          <p>Engineers, masons, welders & site supervisors</p>
-          <span class="cat-count"> Open Roles</span>
+        <div class="cat-card" data-category="Construction" tabindex="0" role="button" aria-expanded="false">
+          <div class="cat-media"><img src="images/cat-construction.jpg" alt="" loading="lazy" onerror="this.parentElement.classList.add('empty')" /></div>
+          <div class="cat-body">
+            <div class="cat-icon" style="--c:#0A5CB8"><i class="fas fa-hard-hat"></i></div>
+            <h3>Construction</h3>
+            <p>Engineers, masons, welders & site supervisors</p>
+            <div class="cat-top"><span class="cat-count">Open roles</span><span class="cat-caret"><i class="fas fa-chevron-down"></i></span></div>
+            <div class="cat-more"><div><div class="cat-more-inner"></div></div></div>
+          </div>
         </div>
-        <div class="cat-card" data-category="Hospitality">
-          <div class="cat-icon" style="--c:#F5A623"><i class="fas fa-concierge-bell"></i></div>
-          <h3>Hospitality</h3>
-          <p>Hotel staff, chefs, waiters & housekeeping</p>
-          <span class="cat-count">Open Roles</span>
+        <div class="cat-card" data-category="Hospitality" tabindex="0" role="button" aria-expanded="false">
+          <div class="cat-media"><img src="images/cat-hospitality.jpg" alt="" loading="lazy" onerror="this.parentElement.classList.add('empty')" /></div>
+          <div class="cat-body">
+            <div class="cat-icon" style="--c:#F5A623"><i class="fas fa-concierge-bell"></i></div>
+            <h3>Hospitality</h3>
+            <p>Hotel staff, chefs, waiters & housekeeping</p>
+            <div class="cat-top"><span class="cat-count">Open roles</span><span class="cat-caret"><i class="fas fa-chevron-down"></i></span></div>
+            <div class="cat-more"><div><div class="cat-more-inner"></div></div></div>
+          </div>
         </div>
-        <div class="cat-card" data-category="IT">
-          <div class="cat-icon" style="--c:#1E6FD9"><i class="fas fa-laptop-code"></i></div>
-          <h3>Information Technology</h3>
-          <p>Developers, network engineers & IT support</p>
-          <span class="cat-count"> Open Roles</span>
+        <div class="cat-card" data-category="IT" tabindex="0" role="button" aria-expanded="false">
+          <div class="cat-media"><img src="images/cat-it.jpg" alt="" loading="lazy" onerror="this.parentElement.classList.add('empty')" /></div>
+          <div class="cat-body">
+            <div class="cat-icon" style="--c:#1E6FD9"><i class="fas fa-laptop-code"></i></div>
+            <h3>Information Technology</h3>
+            <p>Developers, network engineers & IT support</p>
+            <div class="cat-top"><span class="cat-count">Open roles</span><span class="cat-caret"><i class="fas fa-chevron-down"></i></span></div>
+            <div class="cat-more"><div><div class="cat-more-inner"></div></div></div>
+          </div>
         </div>
-        <div class="cat-card" data-category="Finance">
-          <div class="cat-icon" style="--c:#0A5CB8"><i class="fas fa-chart-line"></i></div>
-          <h3>Finance & Banking</h3>
-          <p>Accountants, analysts & financial advisors</p>
-          <span class="cat-count"> Open Roles</span>
+        <div class="cat-card" data-category="Finance" tabindex="0" role="button" aria-expanded="false">
+          <div class="cat-media"><img src="images/cat-finance.jpg" alt="" loading="lazy" onerror="this.parentElement.classList.add('empty')" /></div>
+          <div class="cat-body">
+            <div class="cat-icon" style="--c:#0A5CB8"><i class="fas fa-chart-line"></i></div>
+            <h3>Finance & Banking</h3>
+            <p>Accountants, analysts & financial advisors</p>
+            <div class="cat-top"><span class="cat-count">Open roles</span><span class="cat-caret"><i class="fas fa-chevron-down"></i></span></div>
+            <div class="cat-more"><div><div class="cat-more-inner"></div></div></div>
+          </div>
         </div>
-        <div class="cat-card" data-category="Education">
-          <div class="cat-icon" style="--c:#1E6FD9"><i class="fas fa-chalkboard-teacher"></i></div>
-          <h3>Education</h3>
-          <p>Teachers, tutors & academic staff</p>
-          <span class="cat-count">29 Open Roles</span>
+        <div class="cat-card" data-category="Education" tabindex="0" role="button" aria-expanded="false">
+          <div class="cat-media"><img src="images/cat-education.jpg" alt="" loading="lazy" onerror="this.parentElement.classList.add('empty')" /></div>
+          <div class="cat-body">
+            <div class="cat-icon" style="--c:#1E6FD9"><i class="fas fa-chalkboard-teacher"></i></div>
+            <h3>Education</h3>
+            <p>Teachers, tutors & academic staff</p>
+            <div class="cat-top"><span class="cat-count">Open roles</span><span class="cat-caret"><i class="fas fa-chevron-down"></i></span></div>
+            <div class="cat-more"><div><div class="cat-more-inner"></div></div></div>
+          </div>
         </div>
-        <div class="cat-card" data-category="Domestic">
-          <div class="cat-icon" style="--c:#F5A623"><i class="fas fa-home"></i></div>
-          <h3>Domestic Staff</h3>
-          <p>House managers, nannies & care workers</p>
-          <span class="cat-count">Open Roles</span>
+        <div class="cat-card" data-category="Domestic" tabindex="0" role="button" aria-expanded="false">
+          <div class="cat-media"><img src="images/cat-domestic.jpg" alt="" loading="lazy" onerror="this.parentElement.classList.add('empty')" /></div>
+          <div class="cat-body">
+            <div class="cat-icon" style="--c:#F5A623"><i class="fas fa-home"></i></div>
+            <h3>Domestic Staff</h3>
+            <p>House managers, nannies & care workers</p>
+            <div class="cat-top"><span class="cat-count">Open roles</span><span class="cat-caret"><i class="fas fa-chevron-down"></i></span></div>
+            <div class="cat-more"><div><div class="cat-more-inner"></div></div></div>
+          </div>
         </div>
-        <div class="cat-card" data-category="Logistics">
-          <div class="cat-icon" style="--c:#0A5CB8"><i class="fas fa-truck"></i></div>
-          <h3>Logistics & Transport</h3>
-          <p>Drivers, logistics coordinators & warehouse staff</p>
-          <span class="cat-count"> Open Roles</span>
+        <div class="cat-card" data-category="Logistics" tabindex="0" role="button" aria-expanded="false">
+          <div class="cat-media"><img src="images/cat-logistics.jpg" alt="" loading="lazy" onerror="this.parentElement.classList.add('empty')" /></div>
+          <div class="cat-body">
+            <div class="cat-icon" style="--c:#0A5CB8"><i class="fas fa-truck"></i></div>
+            <h3>Logistics & Transport</h3>
+            <p>Drivers, logistics coordinators & warehouse staff</p>
+            <div class="cat-top"><span class="cat-count">Open roles</span><span class="cat-caret"><i class="fas fa-chevron-down"></i></span></div>
+            <div class="cat-more"><div><div class="cat-more-inner"></div></div></div>
+          </div>
         </div>
       </div>
     </div>
@@ -211,8 +298,8 @@
       <div class="jobs-toolbar">
         <div class="jobs-tabs" role="tablist" aria-label="Job region">
           <button class="jobs-tab active" data-tab="all" role="tab">All Jobs <span class="tab-count" id="tabCountAll">0</span></button>
-          <button class="jobs-tab" data-tab="kenya" role="tab">🇰🇪 Kenya <span class="tab-count" id="tabCountKenya">0</span></button>
-          <button class="jobs-tab" data-tab="international" role="tab">International <span class="tab-count" id="tabCountIntl">0</span></button>
+          <button class="jobs-tab" data-tab="kenya" role="tab"><img class="flag-ico" src="https://flagcdn.com/w40/ke.png" alt="" /> Kenya <span class="tab-count" id="tabCountKenya">0</span></button>
+          <button class="jobs-tab" data-tab="international" role="tab"><i class="fas fa-globe-africa"></i> International <span class="tab-count" id="tabCountIntl">0</span></button>
         </div>
         <span class="jobs-count" id="jobsCount"></span>
       </div>
@@ -237,32 +324,40 @@
         <p>A transparent, step-by-step process from CV submission to landing overseas.</p>
       </div>
       <div class="steps-track">
-        <div class="step-card">
+        <div class="step-card" tabindex="0" role="button" aria-expanded="false">
           <div class="step-num">01</div>
           <div class="step-icon"><i class="fas fa-file-alt"></i></div>
           <h3>Submit Your CV</h3>
           <p>Upload your CV through our secure portal. Our team reviews it within 48 hours and provides professional feedback.</p>
+          <span class="step-tap">Tap for details <i class="fas fa-chevron-down"></i></span>
+          <div class="step-more"><div><div class="step-more-inner"><ul><li style="--c:0">Upload a PDF or Word CV (max 8MB)</li><li style="--c:1">Add your phone and email so we can reach you</li><li style="--c:2">Our team reviews it within 48 hours</li><li style="--c:3">You can also apply straight from any job card</li></ul></div></div></div>
         </div>
         <div class="step-arrow"><i class="fas fa-chevron-right"></i></div>
-        <div class="step-card">
+        <div class="step-card" tabindex="0" role="button" aria-expanded="false">
           <div class="step-num">02</div>
           <div class="step-icon"><i class="fas fa-user-check"></i></div>
           <h3>Profile Matching</h3>
           <p>We match your skills, experience, and preferences to available roles across our network of 120+ verified employers.</p>
+          <span class="step-tap">Tap for details <i class="fas fa-chevron-down"></i></span>
+          <div class="step-more"><div><div class="step-more-inner"><ul><li style="--c:0">We compare your skills and experience with open roles</li><li style="--c:1">We contact you when a role fits your profile</li><li style="--c:2">Tell us your preferred sector or country to help us match you</li></ul></div></div></div>
         </div>
         <div class="step-arrow"><i class="fas fa-chevron-right"></i></div>
-        <div class="step-card">
+        <div class="step-card" tabindex="0" role="button" aria-expanded="false">
           <div class="step-num">03</div>
           <div class="step-icon"><i class="fas fa-handshake"></i></div>
           <h3>Interview & Offer</h3>
           <p>We prepare you for interviews, assist with document verification, and guide you through the employer offer process.</p>
+          <span class="step-tap">Tap for details <i class="fas fa-chevron-down"></i></span>
+          <div class="step-more"><div><div class="step-more-inner"><ul><li style="--c:0">Interview preparation from our team</li><li style="--c:1">Help checking and organising your documents</li><li style="--c:2">We explain the employer's offer before you decide</li></ul></div></div></div>
         </div>
         <div class="step-arrow"><i class="fas fa-chevron-right"></i></div>
-        <div class="step-card">
+        <div class="step-card" tabindex="0" role="button" aria-expanded="false">
           <div class="step-num">04</div>
           <div class="step-icon"><i class="fas fa-plane-departure"></i></div>
           <h3>Visa & Deployment</h3>
           <p>Our visa processing team handles work permits and travel arrangements. You depart with confidence and support.</p>
+          <span class="step-tap">Tap for details <i class="fas fa-chevron-down"></i></span>
+          <div class="step-more"><div><div class="step-more-inner"><ul><li style="--c:0">Guidance on work permit and visa steps for jobs abroad</li><li style="--c:1">Support with travel arrangements once an offer is accepted</li><li style="--c:2">Timelines depend on the employer and the destination country</li></ul></div></div></div>
         </div>
       </div>
     </div>
@@ -347,7 +442,37 @@
     </div>
   </section>
 
-  <!-- ===== TESTIMONIALS ===== -->
+<!-- ===== WHY TRUST US ===== -->
+  <section class="trust-section section" id="why-us">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-eyebrow">Why TOPJOBSEEKERS</span>
+        <h2>A Recruitment Partner You Can <span class="highlight">Rely On</span></h2>
+        <p>Clear communication, careful handling of your information, and honest advice at every step.</p>
+      </div>
+      <div class="trust-grid">
+        <div class="trust-card reveal"><div class="ti"><i class="fas fa-clock"></i></div><h3>CV reviewed in 48 hours</h3><p>Send your CV once. Our recruitment team reviews it and gets back to you within 48 hours.</p></div>
+        <div class="trust-card reveal"><div class="ti"><i class="fas fa-lock"></i></div><h3>Your CV is handled securely</h3><p>Your CV travels over an encrypted connection and is seen only by our team and the employer you apply to.</p></div>
+        <div class="trust-card reveal"><div class="ti"><i class="fab fa-whatsapp"></i></div><h3>Real people on WhatsApp</h3><p>Questions? Chat with our team on WhatsApp, or ask the assistant on this page any time.</p></div>
+        <div class="trust-card reveal"><div class="ti"><i class="fas fa-clipboard-check"></i></div><h3>Honest, clear process</h3><p>We explain each step. We never guarantee a job or a visa, and you always decide whether to accept an offer.</p></div>
+      </div>
+      <div class="safety-box">
+        <i class="fas fa-shield-alt"></i>
+        <div>
+          <h3>Stay safe from job scams</h3>
+          <ul>
+            <li>Never pay anyone to be shortlisted or to "secure" an interview.</li>
+            <li>Before paying any agency, check that it is registered with the National Employment Authority (NEA).</li>
+            <li>Get every fee, contract and job offer in writing, and read it before you sign.</li>
+            <li>Be careful with offers that come through a private number, or that promise a job with no interview.</li>
+            <li>Not sure about an offer? Ask us on WhatsApp before you send any money or documents.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+    <!-- ===== TESTIMONIALS ===== -->
   <section class="testimonials-section section" id="testimonials">
     <div class="container">
       <div class="section-header">
@@ -399,7 +524,48 @@
     </div>
   </section>
 
-  <!-- ===== WHATSAPP COMMUNITY ===== -->
+<!-- ===== FAQ ===== -->
+  <section class="faq-section section" id="faq">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-eyebrow">Questions</span>
+        <h2>Frequently Asked <span class="highlight">Questions</span></h2>
+        <p>Quick answers about applying, timelines and staying safe.</p>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item">
+          <button class="faq-q" type="button" aria-expanded="false"><span>How do I apply for a job?</span><i class="fas fa-chevron-down"></i></button>
+          <div class="faq-a"><div><p>Click any job card to read the details, then fill in the short form and attach your CV (PDF or Word, up to 8MB). Your application is emailed straight to our recruitment team. You can also use the Submit Your CV section if you do not see a role that fits.</p></div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" type="button" aria-expanded="false"><span>How long until I hear back?</span><i class="fas fa-chevron-down"></i></button>
+          <div class="faq-a"><div><p>Our team reviews CVs within 48 hours. After that, timelines depend on the employer. Jobs abroad can take longer because of interviews, documents and work permits.</p></div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" type="button" aria-expanded="false"><span>Do I need an account to apply?</span><i class="fas fa-chevron-down"></i></button>
+          <div class="faq-a"><div><p>No. You can apply directly from any job card without an account. The portal login lets you manage your profile and follow your application status.</p></div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" type="button" aria-expanded="false"><span>What is the difference between Kenya and International jobs?</span><i class="fas fa-chevron-down"></i></button>
+          <div class="faq-a"><div><p>Kenya jobs are roles based in Kenya. International jobs are roles abroad, and usually involve extra steps such as document checks and work permits. Use the tabs in the Job Listings section to switch between them.</p></div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" type="button" aria-expanded="false"><span>Is there a fee?</span><i class="fas fa-chevron-down"></i></button>
+          <div class="faq-a"><div><p>Fees depend on the service. Please ask our team on WhatsApp, and make sure any fee is confirmed to you in writing before you pay anything.</p></div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" type="button" aria-expanded="false"><span>Do you guarantee a job or visa?</span><i class="fas fa-chevron-down"></i></button>
+          <div class="faq-a"><div><p>No. We match you with opportunities and guide you through the process, but hiring decisions and visa approvals are made by employers and governments.</p></div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" type="button" aria-expanded="false"><span>How do I update or delete my data?</span><i class="fas fa-chevron-down"></i></button>
+          <div class="faq-a"><div><p>Email topjobsseekers@gmail.com and we will help. You can read how we handle your information in our <a href="privacy.html">Privacy Policy</a>.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+    <!-- ===== WHATSAPP COMMUNITY ===== -->
   <section class="community-section section" id="community">
     <div class="container">
       <div class="section-header">
@@ -455,14 +621,14 @@
             <i class="fas fa-phone-alt"></i>
             <div>
               <strong>Phone / WhatsApp</strong>
-              <span>+254 748801685<br/>+254 748801685</span>
+              <span>+254 748801685</span>
             </div>
           </div>
           <div class="contact-item">
             <i class="fas fa-envelope"></i>
             <div>
               <strong>Email Us</strong>
-              <span>REACH OUT VIA EMAIL TOO<br/>topjobsseekers@gmail.com</span>
+              <span>topjobsseekers@gmail.com</span>
             </div>
           </div>
           <div class="contact-item">
@@ -521,13 +687,10 @@
       <div class="footer-brand">
         <a href="#" class="logo light">
           <span class="logo-icon"><i class="fas fa-globe-africa"></i></span>
-          <span>Global<strong>Work</strong> <em>Kenya</em></span>
+          <span class="logo-text"><b>TOPJOB</b><i>SEEKERS</i></span>
         </a>
-        <p>Kenya's trusted recruitment partner for overseas and local job placements. Licensed by the Government of Kenya – NITA Accredited.</p>
-        <div class="footer-badges">
-          <span><i class="fas fa-certificate"></i> Gov't Licensed</span>
-          <span><i class="fas fa-shield-alt"></i> Verified Recruiter</span>
-        </div>
+        <p>A Kenyan recruitment agency connecting job seekers with local and overseas employers.</p>
+        <div class="footer-badges" id="footerBadges"><span><i class="fas fa-lock"></i> Secure CV handling</span></div>
       </div>
       <div class="footer-col">
         <h4>Job Seekers</h4>
@@ -545,19 +708,18 @@
         <ul>
           <li><a href="#contact">Post a Job</a></li>
           <li><a href="login.html">Search Candidates</a></li>
-          <li><a href="#">Recruitment Services</a></li>
-          <li><a href="#">Partnership Programs</a></li>
+          <li><a href="#contact">Contact Us</a></li>
         </ul>
       </div>
       <div class="footer-col">
         <h4>Top Destinations</h4>
         <ul>
-          <li><a href="#">Jobs in UAE</a></li>
-          <li><a href="#">Jobs in Qatar</a></li>
-          <li><a href="#">Jobs in Saudi Arabia</a></li>
-          <li><a href="#">Jobs in UK</a></li>
-          <li><a href="#">Jobs in Germany</a></li>
-          <li><a href="#">Jobs in Canada</a></li>
+          <li><a href="#jobsList" data-country="UAE">Jobs in UAE</a></li>
+          <li><a href="#jobsList" data-country="Qatar">Jobs in Qatar</a></li>
+          <li><a href="#jobsList" data-country="Saudi Arabia">Jobs in Saudi Arabia</a></li>
+          <li><a href="#jobsList" data-country="United Kingdom">Jobs in UK</a></li>
+          <li><a href="#jobsList" data-country="Germany">Jobs in Germany</a></li>
+          <li><a href="#jobsList" data-country="Canada">Jobs in Canada</a></li>
         </ul>
       </div>
     </div>
@@ -565,9 +727,10 @@
       <div class="container">
         <span>© 2026 TOPJOBSEEKERS. All rights reserved.</span>
         <div class="footer-legal">
-          <a href="#">Privacy Policy</a>
-          <a href="#">Terms of Service</a>
-          <a href="#">Cookie Policy</a>
+          <a href="privacy.html">Privacy Policy</a>
+          <a href="terms.html">Terms of Use</a>
+          <a href="cookie-policy.html">Cookie Policy</a>
+          <a href="#" id="cookieSettings">Cookie settings</a>
         </div>
       </div>
     </div>
@@ -609,6 +772,8 @@
   <script src="site-config.js"></script>
   <script src="script.js"></script>
   <script src="jobs.js"></script>
+  <script src="ui.js"></script>
+  <script src="consent.js"></script>
   <script src="chat-widget.js"></script>
 </body>
 </html>

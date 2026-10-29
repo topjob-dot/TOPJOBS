@@ -274,6 +274,7 @@ async function renderEmployerView(profile) {
 // ===================== ADMIN VIEW =====================
 async function renderAdminView() {
   dashBody.innerHTML = `
+    <div class="dash-card" id="adminHotCard"></div>
     <div class="dash-card" id="adminPostJobCard"></div>
     <div class="dash-card" id="adminJobsCard"><h3>Manage Jobs</h3><div class="empty-state"><i class="fas fa-spinner fa-spin"></i> Loading...</div></div>
     <div class="dash-card" id="adminPlacementsCard"></div>
@@ -282,6 +283,7 @@ async function renderAdminView() {
     <div class="dash-card" id="adminEmployerCard"><h3>Employer Approvals</h3><div class="empty-state"><i class="fas fa-spinner fa-spin"></i> Loading...</div></div>
     <div class="dash-card" id="adminTestiCard"><h3>Testimonials</h3><div class="empty-state"><i class="fas fa-spinner fa-spin"></i> Loading...</div></div>
   `;
+  renderHotForm();
   renderPostJobForm();
   loadAdminJobs();
   renderPlacementsCard();
@@ -307,7 +309,7 @@ function renderPostJobForm() {
     <div class="form-row">
       <div class="form-group">
         <label>Where is this job? *</label>
-        <select id="pjRegion"><option value="kenya">🇰🇪 Kenya (local)</option><option value="international">🌍 International</option></select>
+        <select id="pjRegion"><option value="kenya">Kenya (local)</option><option value="international">International (abroad)</option></select>
       </div>
       <div class="form-group"><label>Job Title *</label><input type="text" id="pjTitle" placeholder="e.g. Registered Nurse" /></div>
     </div>
@@ -428,10 +430,62 @@ function renderPostJobForm() {
   });
 }
 
+
+// ---------- Hot alerts (quick post, shows in the "Hot Job Alerts" strip until it expires) ----------
+function renderHotForm() {
+  const card = document.getElementById('adminHotCard');
+  if (!card) return;
+  card.innerHTML = `
+    <h3><i class="fas fa-fire" style="color:#e5484d"></i> Post a Hot Alert</h3>
+    <p style="color:var(--text-muted);margin-bottom:16px;">For urgent, last-minute openings. It appears at the top of the site straight away, people can apply with their CV, and it leaves the Hot strip automatically when time is up.</p>
+    <div class="form-row">
+      <div class="form-group"><label>Job title *</label><input type="text" id="hotTitle" placeholder="e.g. 10 Drivers needed in Mombasa" /></div>
+      <div class="form-group"><label>Where? *</label><select id="hotRegion"><option value="kenya">Kenya (local)</option><option value="international">International (abroad)</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Location</label><input type="text" id="hotLocation" placeholder="e.g. Mombasa, Kenya" /></div>
+      <div class="form-group"><label>Company (optional)</label><input type="text" id="hotCompany" /></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Category</label>
+        <select id="hotCategory"><option>Logistics</option><option>Healthcare</option><option>Construction</option><option>Hospitality</option><option>Information Technology</option><option>Finance</option><option>Education</option><option>Domestic</option><option>Sales</option><option>Admin</option></select></div>
+      <div class="form-group"><label>Show as hot for</label>
+        <select id="hotHours"><option value="6">6 hours</option><option value="24" selected>24 hours</option><option value="72">3 days</option><option value="168">7 days</option></select></div>
+    </div>
+    <div class="form-group"><label>Details (a few lines: pay, requirements, how many people)</label><textarea id="hotDesc" rows="3" style="width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:inherit;font-size:14px;"></textarea></div>
+    <button class="btn btn-primary btn-full" id="hotPostBtn"><i class="fas fa-fire"></i> Post Hot Alert</button>
+    <div class="field-error" id="hotMsg" style="margin-top:12px;"></div>`;
+
+  document.getElementById('hotPostBtn').addEventListener('click', async () => {
+    const msg = document.getElementById('hotMsg'); msg.classList.remove('show');
+    const v = (id) => document.getElementById(id).value.trim();
+    const fail = (t) => { msg.textContent = t; msg.classList.add('show'); };
+    if (!v('hotTitle')) return fail('Please enter the job title.');
+    const btn = document.getElementById('hotPostBtn'); btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Posting...';
+    const until = new Date(Date.now() + parseInt(v('hotHours')) * 3600000);
+    const kenya = v('hotRegion') === 'kenya';
+    const { error } = await supabaseClient.from('jobs').insert({
+      title: v('hotTitle'), company: v('hotCompany') || null, location: v('hotLocation') || null,
+      country: kenya ? 'Kenya' : null, region: v('hotRegion'), category: v('hotCategory'),
+      description: v('hotDesc') || null, salary: 'Negotiable — inquire', job_type: 'Full-time', slots: 1,
+      is_hot: true, hot_until: until.toISOString(), deadline: until.toISOString().slice(0, 10),
+      badge: 'hot', icon: '🔥', apply_method: 'cv', source: 'manual', active: true,
+    });
+    if (error) {
+      console.error(error);
+      fail((error.message || 'Could not post.') + ' (If this mentions a missing column, run supabase-setup.sql first.)');
+      btn.disabled = false; btn.innerHTML = '<i class="fas fa-fire"></i> Post Hot Alert'; return;
+    }
+    btn.innerHTML = '<i class="fas fa-check"></i> Live on the site!';
+    loadAdminJobs();
+    setTimeout(renderHotForm, 1400);
+  });
+}
+
 // ---------- Manage jobs (switch off / delete / fetch Kenyan jobs) ----------
 async function loadAdminJobs() {
   const card = document.getElementById('adminJobsCard');
-  const { data, error } = await supabaseClient.from('jobs').select('id,title,company,region,source,active,created_at').order('created_at', { ascending: false }).limit(40);
+  const { data, error } = await supabaseClient.from('jobs').select('id,title,company,region,source,active,created_at,is_hot,hot_until').order('created_at', { ascending: false }).limit(40);
   const head = `<h3><i class="fas fa-list"></i> Manage Jobs</h3>
     <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:6px;">
       <button class="btn btn-outline small-btn" id="syncJobsBtn"><i class="fas fa-sync"></i> Fetch Kenyan jobs now</button>
@@ -441,7 +495,7 @@ async function loadAdminJobs() {
   if (error || !data) { card.innerHTML = head + `<div class="empty-state">Could not load jobs.</div>`; wireSync(); return; }
   card.innerHTML = head + (data.length ? `<div class="mini-list">${data.map((j) => `
       <div class="mini-row">
-        <div class="mini-ph">${j.region === 'international' ? '🌍' : '🇰🇪'}</div>
+        <div class="mini-ph" style="font:700 11px var(--font);color:var(--blue)">${j.is_hot ? '🔥' : (j.region === 'international' ? 'INTL' : 'KE')}</div>
         <div class="mini-main"><strong>${adminEsc(j.title)}</strong><span class="sub">${adminEsc(j.company || '—')} · ${String(j.source || 'manual').startsWith('rss:') ? 'auto-fetched' : 'manual'}${j.active ? '' : ' · hidden'}</span></div>
         <button class="small-btn" data-toggle="${j.id}" data-active="${j.active}">${j.active ? 'Hide' : 'Show'}</button>
         <button class="small-btn danger" data-del="${j.id}">Delete</button>
@@ -463,7 +517,7 @@ function wireSync() {
     btn.disabled = true; msg.textContent = 'Fetching...';
     try {
       const { data: { session } } = await supabaseClient.auth.getSession();
-      const res = await fetch(SUPABASE_URL + '/functions/v1/super-service', { method: 'POST', headers: { Authorization: 'Bearer ' + session.access_token, apikey: SUPABASE_ANON_KEY } });
+      const res = await fetch(SUPABASE_URL + '/functions/v1/sync-external-jobs', { method: 'POST', headers: { Authorization: 'Bearer ' + session.access_token, apikey: SUPABASE_ANON_KEY } });
       const out = await res.json();
       if (!res.ok) throw new Error(out.error || 'Failed');
       msg.textContent = `Added ${out.inserted}, refreshed ${out.updated}.` + (out.errors?.length ? ` Problems: ${out.errors.join(' | ')}` : '');

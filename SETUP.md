@@ -38,7 +38,7 @@ supabase secrets set SYNC_SECRET=pick-a-long-random-string
 ## 5. Chatbot  (Edge Function `chat-assistant`)
 ```
 supabase functions deploy chat-assistant --no-verify-jwt
-supabase secrets set ANTHROPIC_API_KEY=sk-ant-...
+supabase secrets set GEMINI_API_KEY=your-gemini-key
 supabase functions logs chat-assistant
 ```
 The `--no-verify-jwt` flag is required (the website sends no login token). If the bot ever says it is having trouble, the logs now say exactly why (bad key, no credit, etc.).
@@ -48,3 +48,10 @@ The functions now live in `supabase/functions/<name>/index.ts`, which is the fol
 - **Post a Job**: choose Kenya or International; fill what you know. Anything left empty is auto-filled on the site.
 - **Manage Jobs**: hide or delete any job, including auto-fetched ones.
 - **Successful Placements**: add photo + name + role + country. The section stays hidden on the site until you add the first one.
+
+## Appearance update (header, hot alerts, legal pages)
+1. **Run `supabase-setup.sql` again** (adds the Hot Alert columns). Safe to re-run.
+2. Upload ALL changed files to GitHub, including the new ones: `polish.css`, `ui.js`, `consent.js`, `terms.html`, `cookie-policy.html`, `images/README.txt`.
+3. **Your pictures:** see `images/README.txt` for the exact file names. Upload to the `images` folder in GitHub. Until then the site shows flags from the web and hides empty category image areas.
+4. **Hot Alerts:** Dashboard → "Post a Hot Alert". It shows at the top of the site and leaves the strip when its time is up.
+5. In `site-config.js`: set `agencyLicence` to your real licence number to show a licence badge in the footer (leave it empty to show none).

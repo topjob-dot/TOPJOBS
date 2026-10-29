@@ -20,6 +20,11 @@ update public.jobs set region = 'international' where region is null;
 create index if not exists jobs_region_idx on public.jobs(region, active, created_at desc);
 create index if not exists jobs_external_id_idx on public.jobs(external_id);
 
+-- 1b) Hot alerts (urgent jobs shown in the "Hot Alerts" strip until they expire)
+alter table public.jobs add column if not exists is_hot boolean default false;
+alter table public.jobs add column if not exists hot_until timestamptz;
+create index if not exists jobs_hot_idx on public.jobs(is_hot, hot_until);
+
 -- 2) Scrap Jooble: switch off every job that came from it -----------------
 update public.jobs set active = false where source = 'jooble';
 

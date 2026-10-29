@@ -17,13 +17,20 @@ let modalFile = null;          // CV chosen in the modal
 const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const lines = (txt) => String(txt || '').split(/\r?\n/).map((l) => l.replace(/^[\s•\-*·]+/, '').trim()).filter(Boolean);
 
-function timeAgo(dateStr) {
+// Shows "Today", "3 days ago" or "2 weeks ago" for fresh jobs. Old jobs show no age at all (see SITE_CONFIG.showAgeUpToDays).
+function ageLabel(dateStr) {
   const days = Math.floor((Date.now() - new Date(dateStr).getTime()) / 86400000);
+  if (isNaN(days) || days > SITE_CONFIG.showAgeUpToDays) return '';
   if (days <= 0) return 'Today';
-  if (days === 1) return '1 day ago';
+  if (days === 1) return 'Yesterday';
   if (days < 7) return `${days} days ago`;
   const w = Math.floor(days / 7);
   return w === 1 ? '1 week ago' : `${w} weeks ago`;
+}
+
+function regionPill(region, inline) {
+  const kenya = region === 'kenya';
+  return `<span class="region-pill ${inline ? 'inline ' : ''}${kenya ? 'kenya' : 'intl'}">${kenya ? '<img class="flag-ico" src="https://flagcdn.com/w40/ke.png" alt="" />Kenya' : '<i class="fas fa-globe-africa" style="margin-right:5px"></i>International'}</span>`;
 }
 
 const KENYA_WORDS = ['kenya', 'nairobi', 'mombasa', 'kisumu', 'nakuru', 'eldoret', 'thika', 'nyeri', 'machakos', 'kiambu', 'naivasha', 'malindi', 'kisii', 'kakamega', 'embu', 'meru', 'garissa', 'kajiado', 'ruiru', 'kitale'];
@@ -63,17 +70,25 @@ async function loadJobs() {
   const { data, error } = await supabaseClient.from('jobs').select('*').eq('active', true).order('created_at', { ascending: false });
   if (error) { console.error('Failed to load jobs:', error.message); JOBS = []; }
   else {
-    JOBS = data.map((j) => ({
+    const now = Date.now();
+    const maxAge = SITE_CONFIG.hideJobsOlderThanDays;
+    JOBS = data.filter((j) => {
+      if (j.deadline && new Date(j.deadline + 'T23:59:59').getTime() < now) return false;           // closed
+      if (maxAge && now - new Date(j.created_at).getTime() > maxAge * 86400000) return false;     // too old
+      return true;
+    }).map((j) => ({
       id: j.id, title: j.title || 'Untitled role', company: j.company || 'Employer', location: j.location || j.country || 'Kenya',
       country: j.country || '', category: categoryKey(j.category), salary: j.salary || 'Negotiable — inquire',
       type: j.job_type || 'Full-time', badge: j.badge || 'new', icon: j.icon || '💼',
-      posted: timeAgo(j.created_at), slots: j.slots || 1, image_url: j.image_url, description: j.description,
+      posted: ageLabel(j.created_at), created_at: j.created_at, is_hot: !!j.is_hot, hot_until: j.hot_until, slots: j.slots || 1, image_url: j.image_url, description: j.description,
       requirements: j.requirements, responsibilities: j.responsibilities, benefits: j.benefits,
       apply_method: j.apply_method || 'cv', apply_url: j.apply_url, apply_email: j.apply_email,
       source: j.source || 'manual', source_url: j.source_url, deadline: j.deadline, region: regionOf(j),
     }));
   }
   updateTabCounts();
+  updateCounts();
+  renderHot();
   applyFilters(false);
 }
 
@@ -119,11 +134,77 @@ document.getElementById('searchBtn')?.addEventListener('click', filterAndScroll)
 document.getElementById('searchInput')?.addEventListener('keydown', (e) => { if (e.key === 'Enter') filterAndScroll(); });
 document.getElementById('locationFilter')?.addEventListener('change', () => applyFilters());
 document.getElementById('categoryFilter')?.addEventListener('change', () => applyFilters());
-document.querySelectorAll('.cat-card').forEach((card) => card.addEventListener('click', () => {
+function filterByCategory(cat) {
   const sel = document.getElementById('categoryFilter');
-  if (sel) sel.value = card.dataset.category;
+  if (sel) sel.value = cat;
+  document.querySelector('.jobs-tab[data-tab="all"]')?.click();
+  filterAndScroll();
+}
+
+// "Jobs in Kenya" / "Jobs Abroad" cards at the top of the page
+document.querySelectorAll('[data-goto]').forEach((btn) => btn.addEventListener('click', () => {
+  document.querySelector(`.jobs-tab[data-tab="${btn.dataset.goto}"]`)?.click();
+  document.getElementById('jobsList')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}));
+// Footer "Jobs in UAE" etc.
+document.querySelectorAll('[data-country]').forEach((a) => a.addEventListener('click', (e) => {
+  e.preventDefault();
+  const sel = document.getElementById('locationFilter'), kw = document.getElementById('searchInput');
+  document.querySelector('.jobs-tab[data-tab="all"]')?.click();
+  if (kw) kw.value = '';
+  if (sel) { sel.value = a.dataset.country; if (sel.value !== a.dataset.country) { sel.value = ''; if (kw) kw.value = a.dataset.country; } }
   filterAndScroll();
 }));
+
+/* ---------- live counts: hero cards, category cards ---------- */
+function updateCounts() {
+  const k = JOBS.filter((j) => j.region === 'kenya').length, i = JOBS.length - k;
+  const plural = (n) => `${n} open role${n === 1 ? '' : 's'}`;
+  const set = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+  set('heroKenyaCount', k ? plural(k) : 'Browse local roles');
+  set('heroIntlCount', i ? plural(i) : 'Browse overseas roles');
+  if (JOBS.length) set('heroJobTag', `${JOBS.length} open jobs`);
+  document.querySelectorAll('.cat-card').forEach((card) => {
+    const n = JOBS.filter((j) => j.category === categoryKey(card.dataset.category)).length;
+    const el = card.querySelector('.cat-count');
+    if (!el) return;
+    el.textContent = n ? plural(n) : 'No open roles right now';
+    el.classList.toggle('none', !n);
+  });
+}
+
+/* ---------- hot alerts ---------- */
+function timeLeft(until) {
+  if (!until) return '';
+  const ms = new Date(until).getTime() - Date.now();
+  if (ms <= 0) return '';
+  const hrs = ms / 3600000;
+  if (hrs < 1) return 'Closing soon';
+  const h = Math.ceil(hrs);
+  if (h <= 24) return `Closes in ${h} hour${h === 1 ? '' : 's'}`;
+  const d = Math.ceil(h / 24);
+  return `Closes in ${d} day${d === 1 ? '' : 's'}`;
+}
+function renderHot() {
+  const section = document.getElementById('hot-alerts'), track = document.getElementById('hotTrack');
+  if (!section || !track) return;
+  const now = Date.now();
+  const hot = JOBS.filter((j) => j.is_hot && (!j.hot_until || new Date(j.hot_until).getTime() > now))
+                  .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  if (!hot.length) { section.classList.add('hidden'); return; }
+  track.innerHTML = hot.map((j) => `
+    <button class="hot-card" type="button" data-job-id="${esc(j.id)}">
+      <span class="hot-flag">🔥 Hot</span>
+      <h3>${esc(j.title)}</h3>
+      <div class="hot-meta"><span><i class="fas fa-map-marker-alt"></i>${esc(j.location)}</span>${j.company && j.company !== 'Employer' ? `<span><i class="fas fa-building"></i>${esc(j.company)}</span>` : ''}</div>
+      ${j.description ? `<div class="hot-desc">${esc(j.description)}</div>` : ''}
+      <div class="hot-foot"><span class="hot-left">${esc(timeLeft(j.hot_until))}</span><span class="hot-apply">Apply now →</span></div>
+    </button>`).join('');
+  section.classList.remove('hidden');
+}
+document.getElementById('hotTrack')?.addEventListener('click', (e) => {
+  const c = e.target.closest('.hot-card'); if (c) openJobModal(c.dataset.jobId);
+});
 
 /* ---------- render cards ---------- */
 function renderJobs() {
@@ -145,14 +226,13 @@ function renderJobs() {
 
   const shown = currentList.slice(0, visibleCount);
   grid.innerHTML = shown.map((j) => {
-    const isKenya = j.region === 'kenya';
     return `
     <article class="job-card reveal" tabindex="0" role="button" aria-label="View details and apply: ${esc(j.title)}" data-job-id="${esc(j.id)}">
       <div class="job-photo" data-job-id="${esc(j.id)}">
         <img alt="" loading="lazy" ${j.image_url ? `src="${esc(j.image_url)}" class="loaded"` : ''} />
         <span class="job-photo-fallback">${esc(j.icon)}</span>
-        <span class="job-badge badge-${esc(j.badge)}">${esc(String(j.badge).toUpperCase())}</span>
-        <span class="region-pill ${isKenya ? 'kenya' : 'intl'}">${isKenya ? '🇰🇪 Kenya' : '🌍 International'}</span>
+        <span class="job-badge badge-${j.is_hot ? 'hot' : esc(j.badge)}">${j.is_hot ? '🔥 HOT' : esc(String(j.badge).toUpperCase())}</span>
+        ${regionPill(j.region)}
       </div>
       <div class="job-title">${esc(j.title)}</div>
       <div class="job-company"><i class="fas fa-building" style="color:var(--blue);margin-right:5px;"></i>${esc(j.company)}</div>
@@ -163,7 +243,7 @@ function renderJobs() {
       </div>
       <div class="job-salary">${esc(j.salary)}</div>
       <div class="job-footer">
-        <span class="job-date"><i class="fas fa-clock" style="margin-right:4px;"></i>${esc(j.posted)}</span>
+        <span class="job-date">${j.posted ? `<i class="fas fa-clock" style="margin-right:4px;"></i>${esc(j.posted)}` : ''}</span>
         <span class="btn btn-primary btn-apply">View &amp; Apply</span>
       </div>
     </article>`;
@@ -240,14 +320,12 @@ function openJobModal(id) {
   const d = buildDetails(j);
   const abroad = j.region === 'international';
   const li = (arr) => arr.map((x) => `<li>${esc(x)}</li>`).join('');
-  const isImported = String(j.source).startsWith('rss:');
-  const host = isImported ? String(j.source).slice(4) : '';
-  const hasOwnLink = j.apply_method === 'link' && j.apply_url;
+  const hasOwnLink = j.apply_method === 'link' && j.apply_url && j.source === 'manual';
 
   document.getElementById('jobModalBody').innerHTML = `
     <div class="jm-grid">
       <div class="jm-details">
-        <span class="region-pill inline ${abroad ? 'intl' : 'kenya'}">${abroad ? '🌍 International' : '🇰🇪 Kenya'}</span>
+        ${regionPill(j.region, true)}
         <h2 id="jmTitle">${esc(j.title)}</h2>
         <p class="jm-company"><i class="fas fa-building"></i> ${esc(j.company)}</p>
         <div class="jm-chips">
@@ -255,7 +333,7 @@ function openJobModal(id) {
           <span><i class="fas fa-briefcase"></i> ${esc(j.type)}</span>
           <span><i class="fas fa-layer-group"></i> ${esc(j.category)}</span>
           <span><i class="fas fa-users"></i> ${esc(j.slots)} opening${j.slots > 1 ? 's' : ''}</span>
-          <span><i class="fas fa-clock"></i> ${esc(j.posted)}</span>
+          ${j.posted ? `<span><i class="fas fa-clock"></i> ${esc(j.posted)}</span>` : ''}
           ${j.deadline ? `<span><i class="fas fa-calendar-check"></i> Closes ${esc(new Date(j.deadline).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }))}</span>` : ''}
         </div>
         <div class="jm-salary">${esc(j.salary)}</div>
@@ -272,7 +350,6 @@ function openJobModal(id) {
         <h4>Package &amp; support</h4>
         <ul>${li(d.benefits)}</ul>
         ${d.respGenerated || d.reqGenerated ? '<p class="jm-note"><i class="fas fa-info-circle"></i> Where details are marked "typical", the employer confirms the final requirements at interview.</p>' : ''}
-        ${isImported && j.source_url ? `<p class="jm-note"><i class="fas fa-link"></i> Originally listed on ${esc(host)}. <a href="${esc(j.source_url)}" target="_blank" rel="noopener noreferrer">View original posting</a></p>` : ''}
       </div>
 
       <aside class="jm-apply">
@@ -442,7 +519,9 @@ async function loadPlacements() {
   const track = document.getElementById('placementsGrid');
   if (!section || !track) return;
   const { data, error } = await supabaseClient.from('placements').select('*').eq('active', true).order('created_at', { ascending: false }).limit(24);
-  if (error || !data || !data.length) { section.classList.add('hidden'); return; }   // hidden until you add the first one
+  const hasAny = !error && data && data.length > 0;
+  document.querySelectorAll('a[href="#placements"]').forEach((a) => (a.closest('li') || a).classList.toggle('hidden', !hasAny));
+  if (!hasAny) { section.classList.add('hidden'); return; }   // hidden until you add the first one
 
   track.innerHTML = data.map((p) => `
     <figure class="placement-card reveal">
@@ -453,7 +532,7 @@ async function loadPlacements() {
       <figcaption>
         <strong>${esc(p.name)}</strong>
         <span class="placement-role">${esc(p.role)}</span>
-        <span class="placement-where">${esc(p.country_flag || '')} ${esc(p.country || '')}${p.employer ? ` · ${esc(p.employer)}` : ''}</span>
+        <span class="placement-where">${typeof flagFromEmoji === 'function' ? flagFromEmoji(p.country_flag) : esc(p.country_flag || '')} ${esc(p.country || '')}${p.employer ? ` · ${esc(p.employer)}` : ''}</span>
         ${p.quote ? `<p class="placement-quote">“${esc(p.quote)}”</p>` : ''}
       </figcaption>
     </figure>`).join('');
@@ -473,6 +552,7 @@ function initCommunityLinks() {
 
 /* ---------- init ---------- */
 document.addEventListener('DOMContentLoaded', () => {
+  if (SITE_CONFIG.agencyLicence) document.getElementById('footerBadges')?.insertAdjacentHTML('beforeend', `<span class="licence"><i class="fas fa-certificate"></i> Licence: ${esc(SITE_CONFIG.agencyLicence)}</span>`);
   initCommunityLinks();
   loadJobs();
   subscribeJobsLive();
