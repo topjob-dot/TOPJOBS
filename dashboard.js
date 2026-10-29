@@ -463,7 +463,7 @@ function wireSync() {
     btn.disabled = true; msg.textContent = 'Fetching...';
     try {
       const { data: { session } } = await supabaseClient.auth.getSession();
-      const res = await fetch(SUPABASE_URL + '/functions/v1/sync-external-jobs', { method: 'POST', headers: { Authorization: 'Bearer ' + session.access_token, apikey: SUPABASE_ANON_KEY } });
+      const res = await fetch(SUPABASE_URL + '/functions/v1/super-service', { method: 'POST', headers: { Authorization: 'Bearer ' + session.access_token, apikey: SUPABASE_ANON_KEY } });
       const out = await res.json();
       if (!res.ok) throw new Error(out.error || 'Failed');
       msg.textContent = `Added ${out.inserted}, refreshed ${out.updated}.` + (out.errors?.length ? ` Problems: ${out.errors.join(' | ')}` : '');
