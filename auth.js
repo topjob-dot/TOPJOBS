@@ -149,7 +149,9 @@ loginForm.addEventListener('submit', async (e) => {
     return;
   }
 
-  const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+  let error = null;
+  try { ({ error } = await supabaseClient.auth.signInWithPassword({ email, password })); }
+  catch (e) { console.error(e); error = { message: 'Could not reach the login service. Please refresh the page and try again.' }; }
 
   if (error) {
     showMsg(error.message, 'error');
@@ -200,12 +202,16 @@ signupForm.addEventListener('submit', async (e) => {
     return;
   }
 
-  const { error } = await supabaseClient.auth.signUp({
-    email, password,
-    options: {
-      data: { role: selectedRole, full_name, phone, company_name, country, education_level, privacy_accepted },
-    },
-  });
+  let error = null;
+  try {
+    ({ error } = await supabaseClient.auth.signUp({
+      email, password,
+      options: {
+        data: { role: selectedRole, full_name, phone, company_name, country, education_level, privacy_accepted },
+        emailRedirectTo: window.location.origin + '/login.html',
+      },
+    }));
+  } catch (e) { console.error(e); error = { message: 'Could not reach the sign-up service. Please refresh the page and try again.' }; }
 
   if (error) {
     showMsg(error.message, 'error');

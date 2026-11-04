@@ -11,13 +11,13 @@ const JOBS = [
     id: 1, title: 'Registered Nurse (ICU)', company: 'Al Razi Medical Center',
     location: 'Dubai, UAE', country: 'UAE', category: 'Healthcare',
     salary: 'KES 280,000 – 350,000/mo', type: 'Full-time', badge: 'hot',
-    icon: '🏥', posted: 'available', slots: AVAILABLE ON INQUIRY,
+    icon: '🏥', posted: '2 days ago', slots: 12,
   },
   {
     id: 2, title: 'Civil Engineer – Infrastructure', company: 'Saudi Binladin Group',
     location: 'Riyadh, Saudi Arabia', country: 'Saudi Arabia', category: 'Construction',
     salary: 'KES 320,000 – 420,000/mo', type: 'Contract', badge: 'featured',
-    icon: '🏗️', posted: 'inquire', slots: 5,
+    icon: '🏗️', posted: '1 day ago', slots: 5,
   },
   {
     id: 3, title: 'Executive Chef', company: 'Marriott Doha',
@@ -59,7 +59,7 @@ const JOBS = [
     id: 9, title: 'Welding Supervisor', company: 'Qatar Petroleum Projects',
     location: 'Ras Laffan, Qatar', country: 'Qatar', category: 'Construction',
     salary: 'KES 230,000 – 290,000/mo', type: 'Contract', badge: 'hot',
-    icon: '🔧', posted: 'limited slots', slots: inquire,
+    icon: '🔧', posted: '2 days ago', slots: 15,
   },
 ];
  

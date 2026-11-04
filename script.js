@@ -15,11 +15,21 @@ const COUNTRY_LIST = [
   { flag: '🇳🇱', name: 'Netherlands' }, { flag: '🇯🇵', name: 'Japan' },
 ];
 
+// Windows doesn't draw flag emoji (it shows letters like "KE"), so turn them into small flag images.
+function flagFromEmoji(e) {
+  const cps = [...String(e || '')].map(c => c.codePointAt(0));
+  if (cps.length === 2 && cps.every(c => c >= 127462 && c <= 127487)) {
+    const code = cps.map(c => String.fromCharCode(c - 127397)).join('').toLowerCase();
+    return `<img class="flag-ico" src="https://flagcdn.com/w40/${code}.png" alt="" loading="lazy" />`;
+  }
+  return e || '';
+}
+
 // ===== MARQUEE (flag glued to country name, duplicated for seamless loop) =====
 function renderMarquee() {
   const track = document.getElementById('marqueeTrack');
   if (!track) return;
-  const items = COUNTRY_LIST.map(c => `<span>${c.flag} ${c.name}</span>`).join('');
+  const items = COUNTRY_LIST.map(c => `<span>${flagFromEmoji(c.flag)} ${c.name}</span>`).join('');
   track.innerHTML = items + items; // duplicate once for the infinite scroll illusion
 }
 
@@ -165,7 +175,7 @@ async function loadTestimonials() {
         <div class="testi-avatar" style="background:${t.avatar_color}">${t.avatar_initials}</div>
         <div>
           <strong>${t.name}</strong>
-          <span>${t.role_title} ${t.country_flag || ''}</span>
+          <span>${t.role_title} ${flagFromEmoji(t.country_flag)}</span>
         </div>
       </div>
     </div>
@@ -184,12 +194,6 @@ window.addEventListener('scroll', () => {
   if (window.scrollY > 400) btn?.classList.add('visible');
   else btn?.classList.remove('visible');
 }, { passive: true });
-
-// ===== HAMBURGER MENU =====
-const hamburger = document.getElementById('hamburger');
-const navLinks = document.getElementById('navLinks');
-hamburger?.addEventListener('click', () => navLinks?.classList.toggle('open'));
-navLinks?.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
 
 // ===== BACK TO TOP =====
 document.getElementById('backTop')?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
