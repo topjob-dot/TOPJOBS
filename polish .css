@@ -210,3 +210,8 @@ body.legal { background: var(--blue-pale); }
 .qp-check input { width: 18px; height: 18px; }
 .qp-pending { margin-top: 14px; padding: 12px 14px; border-radius: 12px; background: #fff8e8; border: 1px solid #f3d9a0; font-size: 13.5px; }
 .qp-pending button { margin-left: 8px; cursor: pointer; border: 1.5px solid var(--blue); background: #fff; color: var(--blue); border-radius: 100px; padding: 4px 12px; font-weight: 700; }
+
+/* ---------- Instagram ---------- */
+.community-icon.ig { background: linear-gradient(45deg, #f9a03c, #e1306c, #833ab4); color: #fff; box-shadow: 0 10px 24px rgba(225,48,108,.35); }
+.btn-instagram { background: linear-gradient(45deg, #f9a03c, #e1306c, #833ab4); color: #fff !important; border: 0; margin-top: auto; justify-content: center; font-weight: 700; }
+.btn-instagram:hover { filter: brightness(1.08); transform: translateY(-2px); box-shadow: 0 10px 26px rgba(225,48,108,.4); }
