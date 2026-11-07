@@ -73,6 +73,7 @@ async function loadJobs() {
     const now = Date.now();
     const maxAge = SITE_CONFIG.hideJobsOlderThanDays;
     JOBS = data.filter((j) => {
+      if (!SITE_CONFIG.showAutoFetchedJobs && (j.source === 'jooble' || String(j.source || '').startsWith('rss:'))) return false;   // only your own posts
       if (j.deadline && new Date(j.deadline + 'T23:59:59').getTime() < now) return false;           // closed
       if (maxAge && now - new Date(j.created_at).getTime() > maxAge * 86400000) return false;     // too old
       return true;
@@ -83,7 +84,7 @@ async function loadJobs() {
       posted: ageLabel(j.created_at), created_at: j.created_at, is_hot: !!j.is_hot, hot_until: j.hot_until, slots: j.slots || 1, image_url: j.image_url, description: j.description,
       requirements: j.requirements, responsibilities: j.responsibilities, benefits: j.benefits,
       apply_method: j.apply_method || 'cv', apply_url: j.apply_url, apply_email: j.apply_email,
-      source: j.source || 'manual', source_url: j.source_url, deadline: j.deadline, region: regionOf(j),
+      source: j.source || 'manual', is_poster: j.source === 'poster' && !!j.image_url, source_url: j.source_url, deadline: j.deadline, region: regionOf(j),
     }));
   }
   updateTabCounts();
@@ -228,7 +229,7 @@ function renderJobs() {
   grid.innerHTML = shown.map((j) => {
     return `
     <article class="job-card reveal" tabindex="0" role="button" aria-label="View details and apply: ${esc(j.title)}" data-job-id="${esc(j.id)}">
-      <div class="job-photo" data-job-id="${esc(j.id)}">
+      <div class="job-photo${j.is_poster ? ' poster' : ''}" data-job-id="${esc(j.id)}">
         <img alt="" loading="lazy" ${j.image_url ? `src="${esc(j.image_url)}" class="loaded"` : ''} />
         <span class="job-photo-fallback">${esc(j.icon)}</span>
         <span class="job-badge badge-${j.is_hot ? 'hot' : esc(j.badge)}">${j.is_hot ? '🔥 HOT' : esc(String(j.badge).toUpperCase())}</span>
@@ -336,11 +337,13 @@ function openJobModal(id) {
           ${j.posted ? `<span><i class="fas fa-clock"></i> ${esc(j.posted)}</span>` : ''}
           ${j.deadline ? `<span><i class="fas fa-calendar-check"></i> Closes ${esc(new Date(j.deadline).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }))}</span>` : ''}
         </div>
-        <div class="jm-salary">${esc(j.salary)}</div>
+        ${j.is_poster ? '' : `<div class="jm-salary">${esc(j.salary)}</div>`}
+        ${j.is_poster ? `<figure class="jm-poster"><img src="${esc(j.image_url)}" alt="Job notice: ${esc(j.title)}" data-lightbox /><figcaption><i class="fas fa-search-plus"></i> Tap the picture to enlarge</figcaption></figure>` : ''}
 
-        <h4>About the role</h4>
+        <h4>${j.is_poster ? 'Job details' : 'About the role'}</h4>
         ${esc(d.overview).split(/\n+/).map((p) => `<p>${p}</p>`).join('')}
 
+        ${j.is_poster ? '' : `
         <h4>Key responsibilities${d.respGenerated ? ' <small>(typical for this role)</small>' : ''}</h4>
         <ul>${li(d.resp)}</ul>
 
@@ -349,7 +352,7 @@ function openJobModal(id) {
 
         <h4>Package &amp; support</h4>
         <ul>${li(d.benefits)}</ul>
-        ${d.respGenerated || d.reqGenerated ? '<p class="jm-note"><i class="fas fa-info-circle"></i> Where details are marked "typical", the employer confirms the final requirements at interview.</p>' : ''}
+        ${d.respGenerated || d.reqGenerated ? '<p class="jm-note"><i class="fas fa-info-circle"></i> Where details are marked "typical", the employer confirms the final requirements at interview.</p>' : ''}`}
       </div>
 
       <aside class="jm-apply">
@@ -387,6 +390,20 @@ function openJobModal(id) {
   document.getElementById('jobModalBody').scrollTop = 0;
   modal.querySelector('.jm-close')?.focus();
 }
+
+// Tap a poster to see it full screen
+document.addEventListener('click', (e) => {
+  const img = e.target.closest('[data-lightbox]');
+  if (img) {
+    const box = document.createElement('div');
+    box.className = 'lightbox';
+    box.innerHTML = `<img src="${esc(img.src)}" alt="" /><button type="button" aria-label="Close"><i class="fas fa-times"></i></button>`;
+    box.addEventListener('click', () => box.remove());
+    document.body.appendChild(box);
+    return;
+  }
+});
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') document.querySelector('.lightbox')?.remove(); });
 
 function closeJobModal() {
   const modal = document.getElementById('jobModal');
@@ -547,6 +564,11 @@ function initCommunityLinks() {
   const urls = { channel: real(SITE_CONFIG.whatsappChannelUrl) ? SITE_CONFIG.whatsappChannelUrl : fallback,
                  group: real(SITE_CONFIG.whatsappGroupUrl) ? SITE_CONFIG.whatsappGroupUrl : fallback,
                  chat: fallback };
+  const igOk = real(SITE_CONFIG.instagramUrl);
+  document.querySelectorAll('[data-ig]').forEach((a) => {
+    if (igOk) { a.href = SITE_CONFIG.instagramUrl; a.target = '_blank'; a.rel = 'noopener noreferrer'; }
+    else (a.closest('[data-ig-wrap]') || a.closest('li') || a).classList.add('hidden');   // no link yet: hide it, never show a dead button
+  });
   document.querySelectorAll('[data-wa]').forEach((a) => { a.href = urls[a.dataset.wa] || fallback; a.target = '_blank'; a.rel = 'noopener noreferrer'; });
 }
 
