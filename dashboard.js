@@ -633,12 +633,8 @@ async function loadAdminJobs() {
   const card = document.getElementById('adminJobsCard');
   const { data, error } = await supabaseClient.from('jobs').select('id,title,company,region,source,active,created_at,is_hot,hot_until,image_url').order('created_at', { ascending: false }).limit(40);
   const head = `<h3><i class="fas fa-list"></i> Manage Jobs</h3>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:6px;">
-      <button class="btn btn-outline small-btn" id="syncJobsBtn"><i class="fas fa-sync"></i> Fetch Kenyan jobs now</button>
-      <span id="syncMsg" class="dash-hint" style="margin:0;"></span>
-    </div>
-    <p class="dash-hint">Auto-fetched jobs come from the Kenyan feeds set up in the sync function. Your own posts are never overwritten.</p>`;
-  if (error || !data) { card.innerHTML = head + `<div class="empty-state">Could not load jobs.</div>`; wireSync(); return; }
+    <p class="dash-hint">Every job on the site comes from you: Post a Job, Quick Post and Hot Alerts. Hide or delete any of them here.</p>`;
+  if (error || !data) { card.innerHTML = head + `<div class="empty-state">Could not load jobs.</div>`; return; }
   card.innerHTML = head + (data.length ? `<div class="mini-list">${data.map((j) => `
       <div class="mini-row">
         ${j.source === 'poster' && j.image_url ? `<img src="${adminEsc(j.image_url)}" alt="" />` : `<div class="mini-ph" style="font:700 11px var(--font);color:var(--blue)">${j.is_hot ? '🔥' : (j.region === 'international' ? 'INTL' : 'KE')}</div>`}
@@ -653,24 +649,6 @@ async function loadAdminJobs() {
     if (!confirm('Delete this job permanently?')) return;
     await supabaseClient.from('jobs').delete().eq('id', b.dataset.del); loadAdminJobs();
   }));
-  wireSync();
-}
-
-function wireSync() {
-  const btn = document.getElementById('syncJobsBtn'); if (!btn) return;
-  btn.addEventListener('click', async () => {
-    const msg = document.getElementById('syncMsg');
-    btn.disabled = true; msg.textContent = 'Fetching...';
-    try {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      const res = await fetch(SUPABASE_URL + '/functions/v1/sync-external-jobs', { method: 'POST', headers: { Authorization: 'Bearer ' + session.access_token, apikey: SUPABASE_ANON_KEY } });
-      const out = await res.json();
-      if (!res.ok) throw new Error(out.error || 'Failed');
-      msg.textContent = `Added ${out.inserted}, refreshed ${out.updated}.` + (out.errors?.length ? ` Problems: ${out.errors.join(' | ')}` : '');
-      loadAdminJobs();
-    } catch (e) { msg.textContent = 'Could not run the sync. Has the sync-external-jobs function been deployed? (' + e.message + ')'; }
-    btn.disabled = false;
-  });
 }
 
 // ---------- Successful placements ----------
