@@ -14,6 +14,13 @@ const SITE_CONFIG = {
   whatsappChannelUrl: 'https://whatsapp.com/channel/YOUR_CHANNEL_ID',
   whatsappGroupUrl:   'https://chat.whatsapp.com/YOUR_GROUP_INVITE',
 
+  // 👇 PASTE YOUR INSTAGRAM PAGE LINK HERE (example: https://www.instagram.com/yourname). Until you do, every Instagram button stays hidden.
+  instagramUrl: 'https://www.instagram.com/topjobsseekers?xtok=ZGpoaHN1eXZjNzg=',
+
+  // Jobs come only from your Dashboard (Post a Job, Quick Post, Hot Alert). Leave false so any leftover
+  // Jooble / auto-fetched rows in the database never show on the site.
+  showAutoFetchedJobs: false,
+
   // Job feed mix on the "All jobs" tab: 4 Kenyan jobs for every 1 international = 80 / 20
   kenyaShare: 4,
   intlShare: 1,
