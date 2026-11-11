@@ -105,7 +105,7 @@
     const run = async () => {
       if (busy) return; busy = true;
       const role = ($('#rolePill')?.textContent || '').trim();
-      if (role === 'job seeker' && $('#dashCvForm') && !$('#xtPayCard')) { await addProfileCard(user, body); await addPayCard(user, body); }
+      if (role === 'job seeker' && $('#dashCvForm') && !$('#xtPayCard')) { await addProfileCard(user, body); await addPayCard(user, body); await addWithdrawCard(user, body); }
       if (role === 'admin' && $('.dash-card') && !$('#xtPayoutCard')) await addPayoutCard(body);
       busy = false;
     };
@@ -135,7 +135,7 @@
     card.innerHTML = `<h3><i class="fas fa-credit-card"></i> Make a payment</h3><p style="color:var(--text-muted);margin-bottom:16px">Pay by M-Pesa, card or bank in one secure checkout.</p>
       <form id="xtPayForm"><div class="xt-row">
         <div class="form-group"><label>Amount (KES)</label><input id="xtAmt" type="number" min="10" step="1" required></div>
-        <div class="form-group"><label>M-Pesa / phone number</label><input id="xtPhone" type="tel" placeholder="07XX XXX XXX" required></div>
+        <div class="form-group"><label>M-Pesa number (Safaricom)</label><input id="xtPhone" type="tel" placeholder="07XX XXX XXX" required></div>
         <div class="form-group"><label>Payment for</label><input id="xtFor" value="Service fee" maxlength="120"></div></div>
         <button class="btn btn-primary" type="submit" id="xtPayBtn"><i class="fas fa-lock"></i> Pay securely</button><div class="xt-msg" id="xtPayMsg"></div></form>
       <h3 style="margin-top:26px">Payment history</h3><div style="overflow:auto"><table class="dash-table"><thead><tr><th>Date</th><th>For</th><th>Amount</th><th>Status</th></tr></thead><tbody id="xtPayRows"></tbody></table></div>`;
@@ -161,7 +161,33 @@
       b.disabled = true; b.innerHTML = '<span class="btn-spin"></span> Starting checkout…';
       const { data, error } = await sb().functions.invoke('create-payment', { body: { amount: $('#xtAmt').value, phone: $('#xtPhone').value, purpose: $('#xtFor').value } });
       if (error || !data?.url) { m.className = 'xt-msg err'; m.textContent = data?.error || 'Could not start the payment. Please try again.'; b.disabled = false; b.innerHTML = '<i class="fas fa-lock"></i> Pay securely'; return; }
-      location.href = data.url;
+      if (data.url) { location.href = data.url; return; }
+      m.className = 'xt-msg'; m.textContent = 'Check your phone and enter your M-Pesa PIN…';
+      let tries = 0; const t = setInterval(async () => {
+        const rows = await loadRows(); const r = rows.find((x) => x.api_ref === data.api_ref); tries++;
+        if (r && (r.status === 'complete' || r.status === 'failed')) { clearInterval(t); b.disabled = false; b.innerHTML = '<i class="fas fa-lock"></i> Pay securely'; m.className = 'xt-msg ' + (r.status === 'complete' ? 'ok' : 'err'); m.textContent = r.status === 'complete' ? 'Payment received. Thank you!' : 'Payment was not completed. You were not charged.'; }
+        else if (tries > 30) { clearInterval(t); b.disabled = false; b.innerHTML = '<i class="fas fa-lock"></i> Pay securely'; m.textContent = 'Still waiting. It will update in your history once confirmed.'; }
+      }, 3000);
+    });
+  }
+
+
+  async function addWithdrawCard(user, body) {
+    const w = body.querySelector('.wallet-card'); if (!w || $('#xtWdCard')) return;
+    const card = document.createElement('div'); card.className = 'dash-card'; card.id = 'xtWdCard';
+    card.innerHTML = `<h3><i class="fas fa-hand-holding-usd"></i> Withdraw</h3><p style="color:var(--text-muted);margin-bottom:16px">Request money from your Savings Balance. It is sent to your M-Pesa after approval.</p>
+      <form id="xtWdForm"><div class="xt-row"><div class="form-group"><label>Amount (KES)</label><input id="xtWdAmt" type="number" min="1" required></div>
+        <div class="form-group"><label>M-Pesa number</label><input id="xtWdPhone" type="tel" placeholder="07XX XXX XXX" required></div></div>
+        <button class="btn btn-primary" type="submit"><i class="fas fa-paper-plane"></i> Request withdrawal</button><div class="xt-msg" id="xtWdMsg"></div></form>
+      <div style="overflow:auto;margin-top:14px"><table class="dash-table"><tbody id="xtWdRows"></tbody></table></div>`;
+    w.after(card);
+    const load = async () => { const { data } = await sb().from('withdrawals').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(10);
+      $('#xtWdRows').innerHTML = (data || []).map((r) => `<tr><td>${new Date(r.created_at).toLocaleDateString()}</td><td>${money(r.amount)}</td><td>${esc(r.phone)}</td><td>${pill(r.status)}</td></tr>`).join('') || '<tr><td class="empty-state">No withdrawals yet.</td></tr>'; };
+    await load();
+    $('#xtWdForm').addEventListener('submit', async (e) => {
+      e.preventDefault(); const m = $('#xtWdMsg');
+      const { error } = await sb().rpc('request_withdrawal', { p_amount: $('#xtWdAmt').value, p_phone: $('#xtWdPhone').value });
+      m.className = 'xt-msg ' + (error ? 'err' : 'ok'); m.textContent = error ? error.message : 'Request sent. We will review it shortly.'; if (!error) { e.target.reset(); load(); }
     });
   }
 
@@ -169,6 +195,7 @@
     const card = document.createElement('div'); card.className = 'dash-card'; card.id = 'xtPayoutCard';
     card.innerHTML = `<h3><i class="fas fa-money-check-alt"></i> Payments &amp; payouts</h3>
       <h4 style="margin:6px 0">Recent client payments</h4><div style="overflow:auto"><table class="dash-table"><tbody id="xtAdminPays"></tbody></table></div>
+      <h4 style="margin:22px 0 6px">Withdrawal requests</h4><div style="overflow:auto"><table class="dash-table"><tbody id="xtWdAdmin"></tbody></table></div>
       <h4 style="margin:22px 0 6px">Log a payout</h4>
       <form id="xtPayoutForm"><div class="xt-row"><div class="form-group"><label>Recipient</label><input id="xtPoWho" required></div><div class="form-group"><label>Phone</label><input id="xtPoPhone"></div>
         <div class="form-group"><label>Amount (KES)</label><input id="xtPoAmt" type="number" min="1" required></div><div class="form-group"><label>Reason</label><input id="xtPoWhy"></div></div>
@@ -177,10 +204,17 @@
     body.append(card);
     const load = async () => {
       const [{ data: pays }, { data: outs }] = await Promise.all([sb().from('payments').select('*').order('created_at', { ascending: false }).limit(10), sb().from('payouts').select('*').order('created_at', { ascending: false }).limit(15)]);
+      const { data: wds } = await sb().from('withdrawals').select('*, profiles(full_name)').order('created_at', { ascending: false }).limit(15);
+      $('#xtWdAdmin').innerHTML = (wds || []).map((r) => `<tr><td>${esc(r.profiles?.full_name || '')}</td><td>${money(r.amount)}</td><td>${esc(r.phone)}</td><td>${pill(r.status)}</td><td>${r.status === 'pending' ? `<button class="btn btn-primary small-btn" data-wd="approved" data-id="${r.id}">Approve</button> <button class="btn btn-outline small-btn" data-wd="rejected" data-id="${r.id}">Reject</button>` : r.status === 'approved' ? `<button class="btn btn-outline small-btn" data-wd="paid" data-id="${r.id}">Mark paid</button>` : ''}</td></tr>`).join('') || '<tr><td class="empty-state">No requests.</td></tr>';
       $('#xtAdminPays').innerHTML = (pays || []).map((r) => `<tr><td>${new Date(r.created_at).toLocaleDateString()}</td><td>${esc(r.phone)}</td><td>${esc(r.purpose)}</td><td>${money(r.amount)}</td><td>${pill(r.status)}</td></tr>`).join('') || '<tr><td class="empty-state">No payments yet.</td></tr>';
       $('#xtPayouts').innerHTML = (outs || []).map((r) => `<tr><td>${esc(r.recipient)}</td><td>${money(r.amount)}</td><td>${esc(r.reason)}</td><td>${pill(r.status)}</td><td>${r.status === 'pending' ? `<button class="btn btn-primary small-btn" data-po="approved" data-id="${r.id}">Approve</button> <button class="btn btn-outline small-btn" data-po="rejected" data-id="${r.id}">Reject</button>` : r.status === 'approved' ? `<button class="btn btn-outline small-btn" data-po="paid" data-id="${r.id}">Mark paid</button>` : ''}</td></tr>`).join('') || '<tr><td class="empty-state">No payouts logged.</td></tr>';
     };
     await load();
+    $('#xtWdAdmin').addEventListener('click', async (e) => {
+      const b = e.target.closest('[data-wd]'); if (!b) return; b.disabled = true;
+      const { error } = await sb().rpc('decide_withdrawal', { p_id: b.dataset.id, p_status: b.dataset.wd });
+      if (error) alert(error.message); load();
+    });
     $('#xtPayouts').addEventListener('click', async (e) => {
       const b = e.target.closest('[data-po]'); if (!b) return;
       const { data: { user } } = await sb().auth.getUser();
