@@ -1,0 +1,108 @@
+/* ===== extras.css: theme, loader, click effects, bell, payments (generated dark rules at the bottom) ===== */
+html[data-theme="dark"]{color-scheme:dark;--blue-pale:#0e1513;--blue-light:#1b2b27;--text:#e5ece9;--text-muted:#9db0a9;--border:#2a3a36;--shadow:0 4px 24px rgba(0,0,0,.45);--surface:#17211e;--heading:#d3ece4}
+html[data-theme="dark"] body{background:var(--blue-pale);color:var(--text)}
+html[data-theme="dark"] input,html[data-theme="dark"] select,html[data-theme="dark"] textarea{background:#0e1513;color:var(--text);border-color:var(--border)}
+/* loader */
+#pageLoader{position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;background:#17453D;transition:opacity .45s ease,visibility .45s}
+#pageLoader.done{opacity:0;visibility:hidden;pointer-events:none}
+#pageLoader .ld-ring{width:64px;height:64px;border-radius:50%;border:5px solid rgba(255,255,255,.18);border-top-color:#E8A33D;animation:ldspin .9s linear infinite}
+#pageLoader .ld-brand{font:800 22px/1 var(--font-display,sans-serif);letter-spacing:.5px;color:#fff;animation:ldpulse 1.4s ease-in-out infinite}
+#pageLoader .ld-brand span{color:#E8A33D}
+@keyframes ldspin{to{transform:rotate(360deg)}}@keyframes ldpulse{50%{opacity:.55;transform:scale(.97)}}
+/* press / hover effect on everything clickable */
+.btn,button,[role=button],[data-wa],.social-links a,.cat-card,.step-card,.faq-q,.job-card,.placement-card,.auth-tab,.role-option,.file-drop,.nav-fab,.xt-btn,.drawer-links a{transition:transform .16s ease,box-shadow .2s ease,filter .2s ease;-webkit-tap-highlight-color:transparent}
+.btn:hover,button:not(:disabled):hover,[role=button]:hover,[data-wa]:hover,.social-links a:hover,.cat-card:hover,.step-card:hover,.job-card:hover,.placement-card:hover,.role-option:hover,.file-drop:hover,.xt-btn:hover{transform:translateY(-2px);filter:brightness(1.07);box-shadow:0 8px 20px rgba(0,0,0,.14)}
+.btn:active,button:not(:disabled):active,[role=button]:active,[data-wa]:active,.social-links a:active,.cat-card:active,.step-card:active,.faq-q:active,.job-card:active,.placement-card:active,.auth-tab:active,.role-option:active,.file-drop:active,.nav-fab:active,.xt-btn:active,.drawer-links a:active{transform:scale(.95);filter:brightness(.95);box-shadow:none}
+a:not(.btn):not(.skip-link):active{opacity:.7}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.01ms!important;animation-duration:.01ms!important}}
+/* header tools */
+.xt-tools{display:inline-flex;align-items:center;gap:8px;position:relative}
+li.xt-li{display:flex;align-items:center}
+.xt-btn{position:relative;width:38px;height:38px;border-radius:50%;border:1px solid var(--border);background:var(--white,#fff);color:var(--navy);display:inline-flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;padding:0}
+.xt-dark{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.3)}
+html[data-theme="dark"] .xt-btn{background:var(--surface);color:#f2d9a4}
+.xt-badge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--coral,#D65B4A);color:#fff;font:700 11px/18px sans-serif;text-align:center}
+.xt-panel{position:absolute;right:0;top:46px;width:min(340px,92vw);max-height:70vh;overflow:auto;background:var(--white,#fff);color:var(--text);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow-lg,0 14px 40px rgba(0,0,0,.25));z-index:9000;display:none;text-align:left}
+html[data-theme="dark"] .xt-panel{background:var(--surface)}
+.xt-panel.open{display:block;animation:xtpop .18s ease}@keyframes xtpop{from{opacity:0;transform:translateY(-6px)}}
+.xt-panel h4{margin:0;padding:12px 14px;font-size:14px;border-bottom:1px solid var(--border);color:var(--navy)}
+.xt-item{display:block;padding:11px 14px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text)}
+.xt-item b{display:block;font-size:13px}.xt-item span{color:var(--text-muted);font-size:12px}
+.xt-item.unread{background:var(--blue-light)}.xt-item i{margin-right:6px;color:var(--gold,#E8A33D)}
+.xt-empty{padding:18px;text-align:center;color:var(--text-muted);font-size:13px}
+.xt-auth-theme{position:fixed;top:14px;right:14px;z-index:50}
+/* sign-up button states */
+.btn-spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:ldspin .7s linear infinite;vertical-align:-2px;margin-right:8px}
+button.is-ok{background:#0a7c4e!important;border-color:#0a7c4e!important;color:#fff!important}
+button.is-err{background:#b3261e!important;border-color:#b3261e!important;color:#fff!important}
+/* payments / profile cards */
+.xt-row{display:flex;gap:12px;flex-wrap:wrap}.xt-row>.form-group{flex:1 1 160px}
+.xt-msg{margin-top:12px;font-size:13px;font-weight:600}.xt-msg.ok{color:#0a7c4e}.xt-msg.err{color:#b3261e}
+.pay-pill{font-size:11px;font-weight:700;padding:4px 10px;border-radius:100px;text-transform:capitalize}
+.pay-complete{background:#e6f7f1;color:#0a7c4e}.pay-pending,.pay-processing,.pay-approved{background:#fff3e0;color:#b8720b}.pay-failed,.pay-rejected{background:#fdeceb;color:#b3261e}.pay-paid{background:#0a7c4e;color:#fff}
+/* ----- generated dark-mode surfaces ----- */
+html[data-theme="dark"] .auth-card,
+html[data-theme="dark"] .cat-card,
+html[data-theme="dark"] .chat-bubble.assistant,
+html[data-theme="dark"] .chat-chips button,
+html[data-theme="dark"] .chat-input-row,
+html[data-theme="dark"] .chat-panel,
+html[data-theme="dark"] .cv-form-wrap,
+html[data-theme="dark"] .dash-card,
+html[data-theme="dark"] .dash-card select,
+html[data-theme="dark"] .dash-card textarea,
+html[data-theme="dark"] .faq-item,
+html[data-theme="dark"] .file-drop.has-file,
+html[data-theme="dark"] .floating-tag,
+html[data-theme="dark"] .hamburger span,
+html[data-theme="dark"] .hot-card,
+html[data-theme="dark"] .jm-dialog,
+html[data-theme="dark"] .job-card,
+html[data-theme="dark"] .jobs-tabs,
+html[data-theme="dark"] .mini-row,
+html[data-theme="dark"] .mini-row .small-btn,
+html[data-theme="dark"] .nav-fab span,
+html[data-theme="dark"] .pending-banner,
+html[data-theme="dark"] .placement-card,
+html[data-theme="dark"] .placements-section,
+html[data-theme="dark"] .policy-wrap,
+html[data-theme="dark"] .qp-pending,
+html[data-theme="dark"] .qp-pending button,
+html[data-theme="dark"] .safety-box,
+html[data-theme="dark"] .search-box,
+html[data-theme="dark"] .search-section,
+html[data-theme="dark"] .showcase-section,
+html[data-theme="dark"] .stat-chip,
+html[data-theme="dark"] .status-reviewed,
+html[data-theme="dark"] .step-card,
+html[data-theme="dark"] .testi-card,
+html[data-theme="dark"] .trust-section,
+html[data-theme="dark"] body{background:var(--surface)!important}
+html[data-theme="dark"] .big-num,
+html[data-theme="dark"] .cat-card h3,
+html[data-theme="dark"] .contact-item strong,
+html[data-theme="dark"] .cv-form h3,
+html[data-theme="dark"] .dash-card h3,
+html[data-theme="dark"] .emp-text h2,
+html[data-theme="dark"] .faq-q,
+html[data-theme="dark"] .floating-tag,
+html[data-theme="dark"] .hot-card h3,
+html[data-theme="dark"] .hot-title,
+html[data-theme="dark"] .jm-apply h3,
+html[data-theme="dark"] .jm-close,
+html[data-theme="dark"] .jm-details h2,
+html[data-theme="dark"] .jm-details h4,
+html[data-theme="dark"] .job-title,
+html[data-theme="dark"] .jobs-empty strong,
+html[data-theme="dark"] .mini-row strong,
+html[data-theme="dark"] .placement-card strong,
+html[data-theme="dark"] .policy-wrap h1,
+html[data-theme="dark"] .policy-wrap h2,
+html[data-theme="dark"] .policy-wrap th,
+html[data-theme="dark"] .region-pill,
+html[data-theme="dark"] .safety-box h3,
+html[data-theme="dark"] .section-header h2,
+html[data-theme="dark"] .stat-num,
+html[data-theme="dark"] .step-card h3,
+html[data-theme="dark"] .testi-author strong,
+html[data-theme="dark"] .trust-card h3{color:var(--heading)}

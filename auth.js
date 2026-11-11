@@ -16,6 +16,13 @@ function clearMsg() {
   authMsg.textContent = '';
 }
 
+
+// ---- button states: spinner -> green tick / red cross ----
+function btnLoading(btn, text) { btn.disabled = true; btn.classList.remove('is-ok', 'is-err'); btn.innerHTML = '<span class="btn-spin"></span>' + text; }
+function btnOk(btn, text, reset) { btn.classList.add('is-ok'); btn.innerHTML = '<i class="fas fa-check-circle"></i> ' + text; setTimeout(() => btnReset(btn, reset), 3500); }
+function btnErr(btn, text, reset) { btn.classList.add('is-err'); btn.innerHTML = '<i class="fas fa-times-circle"></i> ' + text; setTimeout(() => btnReset(btn, reset), 3000); }
+function btnReset(btn, text) { btn.disabled = false; btn.classList.remove('is-ok', 'is-err'); btn.textContent = text; }
+
 // ---- validation helpers ----
 function isValidEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value.trim());
@@ -166,7 +173,7 @@ signupForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   clearMsg();
   const btn = document.getElementById('signupBtn');
-  btn.disabled = true; btn.textContent = 'Creating account...';
+  btnLoading(btn, 'Creating account...');
 
   const email = document.getElementById('signupEmail').value.trim();
   const password = document.getElementById('signupPassword').value;
@@ -179,26 +186,26 @@ signupForm.addEventListener('submit', async (e) => {
 
   if (!privacy_accepted) {
     showMsg('Please accept the Privacy Policy to continue.', 'error');
-    btn.disabled = false; btn.textContent = 'Create Account';
+    btnErr(btn, 'Could not sign up', 'Create Account');
     return;
   }
 
   if (!isValidEmail(email)) {
     showMsg('Please enter a valid email address.', 'error');
-    btn.disabled = false; btn.textContent = 'Create Account';
+    btnErr(btn, 'Could not sign up', 'Create Account');
     return;
   }
 
   if (phone && !isValidPhone(phone)) {
     showMsg('Please enter a valid phone number.', 'error');
-    btn.disabled = false; btn.textContent = 'Create Account';
+    btnErr(btn, 'Could not sign up', 'Create Account');
     return;
   }
 
   if (!passwordIsStrong(password)) {
     showMsg('Your password does not meet all the requirements shown below the password field.', 'error');
     pwChecklist.classList.add('show');
-    btn.disabled = false; btn.textContent = 'Create Account';
+    btnErr(btn, 'Could not sign up', 'Create Account');
     return;
   }
 
@@ -215,7 +222,7 @@ signupForm.addEventListener('submit', async (e) => {
 
   if (error) {
     showMsg(error.message, 'error');
-    btn.disabled = false; btn.textContent = 'Create Account';
+    btnErr(btn, 'Could not sign up', 'Create Account');
     return;
   }
 
@@ -224,5 +231,5 @@ signupForm.addEventListener('submit', async (e) => {
   } else {
     showMsg('Account created! Check your email to confirm, then log in.', 'success');
   }
-  btn.disabled = false; btn.textContent = 'Create Account';
+  btnOk(btn, 'Account created', 'Create Account');
 });
