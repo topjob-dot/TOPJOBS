@@ -43,3 +43,8 @@ New: `extras.css`, `extras.js`, `supabase-portal.sql`. Changed: `index.html`, `l
 
 Withdrawals: the client's money is held the moment they request. In Dashboard (admin) > Payments & payouts > Withdrawal requests:
 Approve, send the M-Pesa yourself, then press Mark paid. Reject returns the money to the client automatically.
+
+## Latest fixes (job cards, portal header, theme toggle, withdrawal popups)
+- Re-run `supabase-withdrawals.sql` in the SQL Editor (safe to re-run). It adds `recent_paid_withdrawals()`, which feeds the home-page popups.
+- Popups show ONLY real withdrawals you have marked "Paid" (first name, amount, time). With no paid withdrawals, nothing appears.
+- Upload: `jobs.js`, `dashboard.html`, `extras.js`, `extras.css`, `supabase-withdrawals.sql`.

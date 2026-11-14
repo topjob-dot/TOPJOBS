@@ -232,7 +232,6 @@ function renderJobs() {
         <img alt="" loading="lazy" ${j.image_url ? `src="${esc(j.image_url)}" class="loaded"` : ''} />
         <span class="job-photo-fallback">${esc(j.icon)}</span>
         <span class="job-badge badge-${j.is_hot ? 'hot' : esc(j.badge)}">${j.is_hot ? '🔥 HOT' : esc(String(j.badge).toUpperCase())}</span>
-        ${regionPill(j.region)}
       </div>
       <div class="job-title">${esc(j.title)}</div>
       <div class="job-company"><i class="fas fa-building" style="color:var(--blue);margin-right:5px;"></i>${esc(j.company)}</div>

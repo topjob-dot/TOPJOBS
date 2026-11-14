@@ -80,3 +80,13 @@ begin
       'dashboard.html');
 end $$;
 grant execute on function public.decide_withdrawal(uuid, text) to authenticated;
+
+-- Home-page popups: shows ONLY real, already-paid withdrawals (first name + amount + time). Nothing else leaves the database.
+create or replace function public.recent_paid_withdrawals()
+returns table(first_name text, amount numeric, paid_at timestamptz)
+language sql stable security definer set search_path = public as $$
+  select split_part(trim(coalesce(p.full_name, '')), ' ', 1), w.amount, w.decided_at
+  from withdrawals w join profiles p on p.id = w.user_id
+  where w.status = 'paid' and w.decided_at > now() - interval '30 days'
+  order by w.decided_at desc limit 12 $$;
+grant execute on function public.recent_paid_withdrawals() to anon, authenticated;

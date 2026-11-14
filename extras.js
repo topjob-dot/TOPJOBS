@@ -9,7 +9,7 @@
 
   const $ = (s, r) => (r || document).querySelector(s);
   const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const sb = () => (typeof supabaseClient !== 'undefined' ? supabaseClient : null);
+  const sb = () => { try { return typeof supabaseClient !== 'undefined' ? supabaseClient : null; } catch (err) { return null; } };
   const IG = (typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG.instagramUrl) || 'https://www.instagram.com/topjobsseekers';
 
   function setTheme(t) {
@@ -70,8 +70,8 @@
   /* ---------------- mount tools on each page ---------------- */
   async function mount() {
     const client = sb();
-    const { data: { session } } = client ? await client.auth.getSession() : { data: {} };
-    const user = session?.user;
+    let user = null;
+    try { const { data: { session } } = client ? await client.auth.getSession() : { data: {} }; user = session?.user || null; } catch (err) { console.warn('session', err); }
     const bell = user ? await buildBell(user).catch((e) => { console.warn('bell', e); return null; }) : null;
 
     // public site: desktop nav + mobile drawer + footer
@@ -81,18 +81,40 @@
       box.append(igLink('xt-btn'), themeBtn()); if (bell) box.append(bell); li.append(box); nav.insertBefore(li, nav.querySelector('.nav-sep'));
     }
     const drawer = $('.drawer-cta');
-    if (drawer) { const row = document.createElement('div'); row.className = 'xt-tools'; row.style.cssText = 'justify-content:center;margin-top:12px'; row.append(igLink('xt-btn'), themeBtn()); drawer.append(row); }
+    if (drawer) { const row = document.createElement('div'); row.className = 'xt-tools'; row.style.cssText = 'justify-content:center;margin-top:12px'; row.append(igLink('xt-btn')); drawer.append(row); }
     const social = $('.footer .social-links') || $('.footer-bottom');
     if (social && !$('[aria-label="Instagram"]', $('.footer'))) social.append(igLink(social.classList.contains('social-links') ? '' : 'xt-btn'));
     document.querySelectorAll('.social-links a[aria-label="Instagram"]').forEach((a) => { a.href = IG; a.target = '_blank'; a.rel = 'noopener'; });
 
     // portal header
     const dh = $('.dash-header .container > div:last-child');
-    if (dh) { const box = document.createElement('span'); box.className = 'xt-tools'; box.style.marginRight = '10px'; box.append(themeBtn('xt-dark')); if (bell) box.append(bell); dh.prepend(box); }
+    if (dh) { const box = document.createElement('span'); box.className = 'xt-tools'; if (bell) { box.append(bell); dh.prepend(box); } }
     // login page
-    if ($('.auth-wrap')) { const f = document.createElement('div'); f.className = 'xt-auth-theme'; f.append(themeBtn('xt-dark')); document.body.append(f); }
+
+    // home page: a theme button that is always visible at the top-right (the desktop nav has its own)
+    if ($('.nav-fab') && !$('.xt-top-theme')) { document.body.append(themeBtn('xt-top-theme')); }
+    if (nav) payoutPopups();
 
     if (dh && user) watchDashboard(user);
+  }
+
+  /* ---------------- real withdrawal popups on the home page ---------------- */
+  async function payoutPopups() {
+    try { if (sessionStorage.getItem('tjs_pop_off')) return; } catch (e) { /* private mode */ }
+    const client = sb(); if (!client) return;
+    const { data, error } = await client.rpc('recent_paid_withdrawals');
+    if (error || !data || !data.length) return;                    // nothing real to show -> show nothing
+    const ago = (iso) => { const m = Math.max(1, Math.round((Date.now() - new Date(iso)) / 60000)); return m < 60 ? m + ' min ago' : m < 1440 ? Math.round(m / 60) + ' hr ago' : Math.round(m / 1440) + ' day' + (Math.round(m / 1440) > 1 ? 's' : '') + ' ago'; };
+    const box = document.createElement('div'); box.className = 'xt-pop'; box.setAttribute('role', 'status'); box.setAttribute('aria-live', 'polite'); document.body.append(box);
+    let i = 0, timer;
+    const show = () => {
+      const r = data[i++ % data.length], name = esc((r.first_name || '').trim() || 'A client');
+      box.innerHTML = `<span class="xt-pop-ico"><i class="fas fa-check"></i></span><div><b>${name} withdrew ${money(r.amount)}</b><span>to M-Pesa · ${ago(r.paid_at)}</span></div><button type="button" aria-label="Close">&times;</button>`;
+      box.classList.add('show'); setTimeout(() => box.classList.remove('show'), 5500);
+      timer = setTimeout(show, 12000);
+    };
+    box.addEventListener('click', (e) => { if (e.target.closest('button')) { clearTimeout(timer); box.classList.remove('show'); try { sessionStorage.setItem('tjs_pop_off', '1'); } catch (x) { /* ignore */ } } });
+    setTimeout(show, 7000);
   }
 
   /* ---------------- dashboard cards ---------------- */

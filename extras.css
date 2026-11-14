@@ -113,3 +113,19 @@ html[data-theme="dark"] .trust-card h3{color:var(--heading)}
 .xt-link{background:none;border:0;color:var(--blue);font-weight:600;font-size:12px;padding:6px 0 0;cursor:pointer;font-family:inherit}
 .xt-wd-note{font-size:12.5px;color:var(--text-muted);margin:2px 0 14px}.xt-wd-note i{color:#0a7c4e;margin-right:6px}
 html[data-theme="dark"] .xt-wd-icon{background:#1b2b27;color:#5fd4a4}
+
+/* home: theme button always visible at the top-right on phones/tablets (desktop nav has its own) */
+.xt-top-theme{display:none;position:fixed;top:12px;right:12px;z-index:1400;width:48px;height:48px;font-size:18px;background:var(--blue);color:#fff;border:1.5px solid rgba(232,163,61,.6);box-shadow:0 6px 18px rgba(0,0,0,.25)}
+html[data-theme="dark"] .xt-top-theme{background:var(--surface);color:#f2d9a4}
+@media (max-width:1180px){.xt-top-theme{display:inline-flex}.nav-links .xt-theme{display:none}}
+/* bell panel never runs off-screen on phones */
+@media (max-width:560px){.navbar .xt-panel{position:fixed;left:12px;right:12px;top:66px;width:auto}}
+/* real withdrawal popups */
+.xt-pop{position:fixed;left:14px;bottom:18px;z-index:1300;max-width:min(340px,calc(100vw - 28px));display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:var(--white,#fff);color:var(--text);border:1px solid var(--border);box-shadow:0 14px 40px rgba(0,0,0,.22);transform:translateY(24px);opacity:0;pointer-events:none;transition:transform .35s ease,opacity .35s ease}
+.xt-pop.show{transform:none;opacity:1;pointer-events:auto}
+.xt-pop b{display:block;font-size:13.5px;color:var(--navy)}.xt-pop span{font-size:12px;color:var(--text-muted)}
+.xt-pop-ico{width:38px;height:38px;border-radius:50%;display:grid!important;place-items:center;background:#e6f7f1;color:#0a7c4e!important;font-size:15px!important;flex-shrink:0;animation:xtpulse 1.6s ease-in-out infinite}
+.xt-pop button{margin-left:auto;background:none;border:0;font-size:20px;line-height:1;color:var(--text-muted);cursor:pointer;padding:2px 4px}
+@keyframes xtpulse{0%,100%{box-shadow:0 0 0 0 rgba(10,124,78,.45)}50%{box-shadow:0 0 0 9px rgba(10,124,78,0)}}
+html[data-theme="dark"] .xt-pop{background:var(--surface)}html[data-theme="dark"] .xt-pop b{color:var(--heading)}
+@media (prefers-reduced-motion:reduce){.xt-pop-ico{animation:none}}
