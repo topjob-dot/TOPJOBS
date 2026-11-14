@@ -28,6 +28,7 @@ async function init() {
   }
 
   rolePill.textContent = profile.role.replace('_', ' ');
+  rolePill.hidden = profile.role === 'job_seeker';   // clients don't need to see the word
 
   if (profile.role === 'job_seeker') renderJobSeekerView(session.user.id, profile);
   else if (profile.role === 'employer') renderEmployerView(profile);
@@ -88,7 +89,7 @@ async function renderJobSeekerView(userId, profile) {
     <div class="wallet-card reveal-dash">
       <div class="wallet-label"><i class="fas fa-wallet"></i> Savings Balance</div>
       <div class="wallet-amount">KSH <span id="walletAmountNum">0</span></div>
-      <p class="wallet-note">Balance held toward future service payment. Updated by TOPJOBSEEKERS admin.</p>
+      <p class="wallet-note">Balance is valid for placed job seekers only. Updated by TOPJOBSEEKERS admin.</p>
     </div>
 
     <div class="stats-row reveal-dash">

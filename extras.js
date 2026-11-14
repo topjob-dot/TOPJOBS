@@ -127,7 +127,7 @@
     const run = async () => {
       if (busy) return; busy = true;
       const role = ($('#rolePill')?.textContent || '').trim();
-      if (role === 'job seeker' && $('#dashCvForm') && !$('#xtPayCard')) { await addProfileCard(user, body); await addPayCard(user, body); await addWithdrawCard(user, body); }
+      if (role === 'job seeker' && $('#dashCvForm') && !$('#xtProfileCard')) { await addProfileCard(user, body); await addWithdrawCard(user, body); await profileGate(user); }
       if (role === 'admin' && $('.dash-card') && !$('#xtPayoutCard')) await addPayoutCard(body);
       busy = false;
     };
@@ -152,57 +152,59 @@
     });
   }
 
-  async function addPayCard(user, body) {
-    const card = document.createElement('div'); card.className = 'dash-card'; card.id = 'xtPayCard';
-    card.innerHTML = `<h3><i class="fas fa-credit-card"></i> Make a payment</h3><p style="color:var(--text-muted);margin-bottom:16px">Pay by M-Pesa, card or bank in one secure checkout.</p>
-      <form id="xtPayForm"><div class="xt-row">
-        <div class="form-group"><label>Amount (KES)</label><input id="xtAmt" type="number" min="10" step="1" required></div>
-        <div class="form-group"><label>M-Pesa number (Safaricom)</label><input id="xtPhone" type="tel" placeholder="07XX XXX XXX" required></div>
-        <div class="form-group"><label>Payment for</label><input id="xtFor" value="Service fee" maxlength="120"></div></div>
-        <button class="btn btn-primary" type="submit" id="xtPayBtn"><i class="fas fa-lock"></i> Pay securely</button><div class="xt-msg" id="xtPayMsg"></div></form>
-      <h3 style="margin-top:26px">Payment history</h3><div style="overflow:auto"><table class="dash-table"><thead><tr><th>Date</th><th>For</th><th>Amount</th><th>Status</th></tr></thead><tbody id="xtPayRows"></tbody></table></div>`;
-    body.append(card);
-    const loadRows = async () => {
-      const { data } = await sb().from('payments').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(15);
-      $('#xtPayRows').innerHTML = (data || []).length ? data.map((r) => `<tr><td>${new Date(r.created_at).toLocaleDateString()}</td><td>${esc(r.purpose)}</td><td>${money(r.amount)}</td><td>${pill(r.status)}</td></tr>`).join('') : '<tr><td colspan="4" class="empty-state">No payments yet.</td></tr>';
-      return data || [];
-    };
-    await loadRows();
-    // returning from checkout: the webhook confirms the payment, so we only wait and show what it says
-    const ref = new URLSearchParams(location.search).get('paid');
-    if (ref) {
-      const m = $('#xtPayMsg'); m.className = 'xt-msg'; m.textContent = 'Confirming your payment…';
-      let tries = 0; const t = setInterval(async () => {
-        const rows = await loadRows(); const r = rows.find((x) => x.api_ref === ref); tries++;
-        if (r && (r.status === 'complete' || r.status === 'failed')) { clearInterval(t); m.className = 'xt-msg ' + (r.status === 'complete' ? 'ok' : 'err'); m.textContent = r.status === 'complete' ? 'Payment received. Thank you!' : 'Payment failed. You were not charged.'; }
-        else if (tries > 20) { clearInterval(t); m.textContent = 'Still processing. It will update here once confirmed.'; }
-      }, 3000);
-    }
-    $('#xtPayForm').addEventListener('submit', async (e) => {
-      e.preventDefault(); const b = $('#xtPayBtn'), m = $('#xtPayMsg'); m.textContent = '';
-      b.disabled = true; b.innerHTML = '<span class="btn-spin"></span> Starting checkout…';
-      const { data, error } = await sb().functions.invoke('create-payment', { body: { amount: $('#xtAmt').value, phone: $('#xtPhone').value, purpose: $('#xtFor').value } });
-      if (error || !data?.url) { m.className = 'xt-msg err'; m.textContent = data?.error || 'Could not start the payment. Please try again.'; b.disabled = false; b.innerHTML = '<i class="fas fa-lock"></i> Pay securely'; return; }
-      if (data.url) { location.href = data.url; return; }
-      m.className = 'xt-msg'; m.textContent = 'Check your phone and enter your M-Pesa PIN…';
-      let tries = 0; const t = setInterval(async () => {
-        const rows = await loadRows(); const r = rows.find((x) => x.api_ref === data.api_ref); tries++;
-        if (r && (r.status === 'complete' || r.status === 'failed')) { clearInterval(t); b.disabled = false; b.innerHTML = '<i class="fas fa-lock"></i> Pay securely'; m.className = 'xt-msg ' + (r.status === 'complete' ? 'ok' : 'err'); m.textContent = r.status === 'complete' ? 'Payment received. Thank you!' : 'Payment was not completed. You were not charged.'; }
-        else if (tries > 30) { clearInterval(t); b.disabled = false; b.innerHTML = '<i class="fas fa-lock"></i> Pay securely'; m.textContent = 'Still waiting. It will update in your history once confirmed.'; }
-      }, 3000);
+
+  /* ---------------- profile gate: clients must finish their details ---------------- */
+  async function profileGate(user) {
+    if ($('#xtGate')) return;
+    const { data: p } = await sb().from('profiles').select('full_name,phone,country,education_level,residence,current_work,preferred_location').eq('id', user.id).maybeSingle();
+    if (!p) return;
+    const blank = (v) => !String(v ?? '').trim();
+    if (!['full_name', 'phone', 'country', 'education_level', 'residence', 'current_work', 'preferred_location'].some((k) => blank(p[k]))) return;
+    const countries = ['Kenya', 'Uganda', 'Tanzania', 'Rwanda', 'Ethiopia', 'Nigeria', 'Ghana', 'South Africa', 'Egypt', 'UAE', 'Saudi Arabia', 'Qatar', 'Kuwait', 'Bahrain', 'United Kingdom', 'Germany', 'Canada', 'United States', 'Other'];
+    const edu = ['Primary', 'Secondary', 'Certificate', 'Diploma', "Bachelor's Degree", "Master's Degree", 'PhD'];
+    const opts = (list, cur) => '<option value="">Select...</option>' + list.map((o) => `<option ${o === cur ? 'selected' : ''}>${esc(o)}</option>`).join('');
+    const ov = document.createElement('div'); ov.id = 'xtGate'; ov.className = 'xt-gate'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true');
+    ov.innerHTML = `<div class="xt-gate-box"><h3><i class="fas fa-id-card"></i> Complete your profile</h3>
+      <p>Please fill in every field to keep using your portal. It makes your profile valid for employers and for job alerts.</p>
+      <form id="xtGateForm" novalidate>
+        <div class="form-group"><label>Full name</label><input id="gName" value="${esc(p.full_name)}" autocomplete="name"></div>
+        <div class="form-group"><label>Phone (M-Pesa)</label><input id="gPhone" type="tel" value="${esc(p.phone)}" placeholder="07XX XXX XXX" autocomplete="tel"></div>
+        <div class="form-group"><label>Current country</label><select id="gCountry">${opts(countries, p.country)}</select></div>
+        <div class="form-group"><label>Highest level of education</label><select id="gEdu">${opts(edu, p.education_level)}</select></div>
+        <div class="form-group"><label>Where do you live now?</label><input id="gRes" value="${esc(p.residence)}" placeholder="e.g. Nairobi, Kenya"></div>
+        <div class="form-group"><label>What work do you do now?</label><input id="gWork" value="${esc(p.current_work)}" placeholder="e.g. Nurse, Driver, Accountant"></div>
+        <div class="form-group"><label>Where do you want to work?</label><input id="gLoc" value="${esc(p.preferred_location)}" placeholder="e.g. Qatar, Dubai, Mombasa"></div>
+        <button class="btn btn-primary btn-full" type="submit" id="gBtn">Save and continue</button><div class="xt-msg" id="gMsg"></div></form></div>`;
+    document.body.append(ov); document.documentElement.style.overflow = 'hidden';
+    $('#xtGateForm').addEventListener('submit', async (e) => {
+      e.preventDefault(); const m = $('#gMsg'), b = $('#gBtn');
+      const v = { n: $('#gName').value, ph: $('#gPhone').value, c: $('#gCountry').value, ed: $('#gEdu').value, r: $('#gRes').value, w: $('#gWork').value, l: $('#gLoc').value };
+      const fail = (t) => { m.className = 'xt-msg err'; m.textContent = t; };
+      if (Object.values(v).some(blank)) return fail('Please fill in every field.');
+      if (!/^\+?\d{7,15}$/.test(v.ph.replace(/[\s\-()]/g, ''))) return fail('Enter a valid phone number.');
+      b.disabled = true; b.textContent = 'Saving...';
+      const { error } = await sb().rpc('complete_my_profile', { p_full_name: v.n, p_phone: v.ph, p_country: v.c, p_education: v.ed, p_residence: v.r, p_current_work: v.w, p_preferred_location: v.l });
+      if (error) {
+        b.disabled = false; b.textContent = 'Save and continue';
+        if (error.code === 'PGRST202') { console.warn('complete_my_profile missing: run supabase-withdrawals.sql'); ov.remove(); document.documentElement.style.overflow = ''; return; }   // never lock people out if the SQL was not run yet
+        return fail(error.message);
+      }
+      location.reload();
     });
   }
-
 
   async function addWithdrawCard(user, body) {
     const w = body.querySelector('.wallet-card'); if (!w || $('#xtWdCard')) return;
     const MIN = (typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG.minWithdrawal) || 100;
     const getProfile = async () => (await sb().from('profiles').select('wallet_balance,phone').eq('id', user.id).maybeSingle()).data || {};
     const prof = await getProfile();
+    const { data: placedRows } = await sb().from('cv_submissions').select('id').eq('user_id', user.id).eq('status', 'placed').limit(1);
+    const placed = !!(placedRows && placedRows.length);
     const card = document.createElement('div'); card.className = 'dash-card xt-wd'; card.id = 'xtWdCard';
     card.innerHTML = `<div class="xt-wd-head"><span class="xt-wd-icon"><i class="fas fa-mobile-screen-button"></i></span>
         <div><h3 style="margin:0">Withdraw to M-Pesa</h3><p style="color:var(--text-muted);font-size:13px;margin:2px 0 0">Available: <b id="xtWdAvail">${money(prof.wallet_balance || 0)}</b></p></div></div>
-      <form id="xtWdForm" novalidate>
+      ${placed ? '' : '<div class="xt-lock"><i class="fas fa-lock"></i><span>Your balance is valid for <b>placed job seekers</b>. Withdrawals unlock once you have been placed in a job.</span></div>'}
+      <form id="xtWdForm" novalidate ${placed ? '' : 'style="opacity:.5;pointer-events:none" aria-disabled="true"'}>
         <div class="xt-row">
           <div class="form-group"><label>Amount (KES)</label><input id="xtWdAmt" type="number" inputmode="numeric" min="${MIN}" step="1" placeholder="Min ${MIN}" required>
             <button type="button" class="xt-link" id="xtWdAll">Withdraw everything</button></div>

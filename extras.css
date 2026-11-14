@@ -129,3 +129,11 @@ html[data-theme="dark"] .xt-top-theme{background:var(--surface);color:#f2d9a4}
 @keyframes xtpulse{0%,100%{box-shadow:0 0 0 0 rgba(10,124,78,.45)}50%{box-shadow:0 0 0 9px rgba(10,124,78,0)}}
 html[data-theme="dark"] .xt-pop{background:var(--surface)}html[data-theme="dark"] .xt-pop b{color:var(--heading)}
 @media (prefers-reduced-motion:reduce){.xt-pop-ico{animation:none}}
+
+/* profile gate + placed lock */
+.xt-gate{position:fixed;inset:0;z-index:9500;background:rgba(10,22,20,.72);backdrop-filter:blur(4px);display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:24px 14px}
+.xt-gate-box{width:100%;max-width:480px;background:var(--white,#fff);color:var(--text);border-radius:20px;padding:26px 22px;box-shadow:0 24px 60px rgba(0,0,0,.4);margin:auto}
+.xt-gate-box h3{color:var(--navy);margin:0 0 6px;font-size:20px}.xt-gate-box h3 i{color:var(--gold);margin-right:8px}
+.xt-gate-box>p{color:var(--text-muted);font-size:13.5px;margin-bottom:16px}
+html[data-theme="dark"] .xt-gate-box{background:var(--surface)}html[data-theme="dark"] .xt-gate-box h3{color:var(--heading)}
+.xt-lock{display:flex;gap:10px;align-items:flex-start;background:#fff3e0;color:#8a5a0a;border-radius:12px;padding:12px 14px;font-size:13px;margin-bottom:14px;font-weight:500}.xt-lock i{margin-top:3px}

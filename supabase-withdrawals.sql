@@ -28,10 +28,13 @@ declare
   v_id uuid;
   v_min constant numeric := 100;        -- smallest withdrawal (KES). Keep in step with minWithdrawal in site-config.js
   v_max constant numeric := 150000;     -- M-Pesa single-transaction ceiling
+  v_require_placed constant boolean := true;   -- true = only placed job seekers can withdraw (set false to allow everyone)
 begin
   if v_uid is null then raise exception 'Please log in first.'; end if;
   if not exists (select 1 from profiles where id = v_uid and role = 'job_seeker') then
     raise exception 'Only client accounts can withdraw.'; end if;
+  if v_require_placed and not exists (select 1 from cv_submissions where user_id = v_uid and status = 'placed') then
+    raise exception 'Your balance can be withdrawn once you have been placed in a job.'; end if;
 
   -- accept 07XXXXXXXX, 01XXXXXXXX, +2547XXXXXXXX, 2547XXXXXXXX -> store as 2547XXXXXXXX
   v_phone := regexp_replace(v_phone, '^\+', '');
@@ -90,3 +93,20 @@ language sql stable security definer set search_path = public as $$
   where w.status = 'paid' and w.decided_at > now() - interval '30 days'
   order by w.decided_at desc limit 12 $$;
 grant execute on function public.recent_paid_withdrawals() to anon, authenticated;
+
+-- Profile gate: clients must complete these fields. Only these columns can be changed (never role or balance).
+create or replace function public.complete_my_profile(p_full_name text, p_phone text, p_country text, p_education text,
+  p_residence text, p_current_work text, p_preferred_location text)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if auth.uid() is null then raise exception 'Please log in first.'; end if;
+  if coalesce(trim(p_full_name), '') = '' or coalesce(trim(p_country), '') = '' or coalesce(trim(p_education), '') = ''
+     or coalesce(trim(p_residence), '') = '' or coalesce(trim(p_current_work), '') = '' or coalesce(trim(p_preferred_location), '') = '' then
+    raise exception 'Please fill in every field.'; end if;
+  if regexp_replace(coalesce(p_phone, ''), '[\s\-()]', '', 'g') !~ '^\+?\d{7,15}$' then raise exception 'Enter a valid phone number.'; end if;
+  update public.profiles set full_name = trim(p_full_name), phone = trim(p_phone), country = trim(p_country), education_level = trim(p_education),
+    residence = trim(p_residence), current_work = trim(p_current_work), preferred_location = trim(p_preferred_location),
+    email = coalesce(nullif(email, ''), (select u.email from auth.users u where u.id = auth.uid()))
+  where id = auth.uid();
+end $$;
+grant execute on function public.complete_my_profile(text, text, text, text, text, text, text) to authenticated;

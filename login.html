@@ -82,6 +82,8 @@
   .pw-checklist li.met { color: #0a7c4e; font-weight: 600; }
   .pw-checklist li.met i { color: #0a7c4e; }
   .pw-checklist li.met i::before { content: "\f00c"; }
+  .balance-note { display: flex; gap: 8px; align-items: flex-start; background: var(--blue-light); color: var(--blue); border-radius: 12px; padding: 11px 13px; font-size: 12.5px; margin-top: 18px; }
+  .balance-note i { margin-top: 2px; }
   .legal-note { text-align: center; font-size: 12px; color: var(--text-muted); margin-top: 18px; }
   .legal-note a { color: var(--blue); font-weight: 600; }
   .mobile-social { display: none; margin-top: 22px; text-align: center; }
@@ -116,11 +118,12 @@
     <a href="index.html" class="brand-logo"><i class="fas fa-globe-africa"></i> TOPJOBSEEKERS</a>
     <div class="brand-copy">
       <h1>Your next job <em>abroad</em> starts here.</h1>
-      <p>Log in to track applications, get matching job alerts, and manage your savings balance and M-Pesa withdrawals.</p>
+      <p>Log in to track applications, get matching job alerts, and and manage your savings balance.</p>
       <ul class="brand-points">
         <li><i class="fas fa-file-circle-check"></i> Track every CV application in one place</li>
         <li><i class="fas fa-bell"></i> Instant alerts for jobs that match you</li>
-        <li><i class="fas fa-mobile-screen-button"></i> Pay and withdraw securely with M-Pesa</li>
+        <li><i class="fas fa-mobile-screen-button"></i> Withdraw your balance to M-Pesa</li>
+        <li><i class="fas fa-user-check"></i> Your balance is valid for <b>placed job seekers</b></li>
       </ul>
     </div>
     <div class="brand-foot">
@@ -254,6 +257,7 @@
         <p class="form-note">Employer accounts require admin approval before candidate access is unlocked.</p>
       </form>
 
+        <p class="balance-note"><i class="fas fa-circle-info"></i> Savings balance and M-Pesa withdrawals are valid for <b>placed job seekers</b> only.</p>
         <p class="legal-note">By continuing you agree to our <a href="terms.html" target="_blank">Terms</a> and <a href="privacy.html" target="_blank">Privacy Policy</a>.</p>
       </div>
 
