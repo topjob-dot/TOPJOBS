@@ -174,20 +174,47 @@
 
   async function addWithdrawCard(user, body) {
     const w = body.querySelector('.wallet-card'); if (!w || $('#xtWdCard')) return;
-    const card = document.createElement('div'); card.className = 'dash-card'; card.id = 'xtWdCard';
-    card.innerHTML = `<h3><i class="fas fa-hand-holding-usd"></i> Withdraw</h3><p style="color:var(--text-muted);margin-bottom:16px">Request money from your Savings Balance. It is sent to your M-Pesa after approval.</p>
-      <form id="xtWdForm"><div class="xt-row"><div class="form-group"><label>Amount (KES)</label><input id="xtWdAmt" type="number" min="1" required></div>
-        <div class="form-group"><label>M-Pesa number</label><input id="xtWdPhone" type="tel" placeholder="07XX XXX XXX" required></div></div>
-        <button class="btn btn-primary" type="submit"><i class="fas fa-paper-plane"></i> Request withdrawal</button><div class="xt-msg" id="xtWdMsg"></div></form>
-      <div style="overflow:auto;margin-top:14px"><table class="dash-table"><tbody id="xtWdRows"></tbody></table></div>`;
+    const MIN = (typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG.minWithdrawal) || 100;
+    const getProfile = async () => (await sb().from('profiles').select('wallet_balance,phone').eq('id', user.id).maybeSingle()).data || {};
+    const prof = await getProfile();
+    const card = document.createElement('div'); card.className = 'dash-card xt-wd'; card.id = 'xtWdCard';
+    card.innerHTML = `<div class="xt-wd-head"><span class="xt-wd-icon"><i class="fas fa-mobile-screen-button"></i></span>
+        <div><h3 style="margin:0">Withdraw to M-Pesa</h3><p style="color:var(--text-muted);font-size:13px;margin:2px 0 0">Available: <b id="xtWdAvail">${money(prof.wallet_balance || 0)}</b></p></div></div>
+      <form id="xtWdForm" novalidate>
+        <div class="xt-row">
+          <div class="form-group"><label>Amount (KES)</label><input id="xtWdAmt" type="number" inputmode="numeric" min="${MIN}" step="1" placeholder="Min ${MIN}" required>
+            <button type="button" class="xt-link" id="xtWdAll">Withdraw everything</button></div>
+          <div class="form-group"><label>M-Pesa number</label><input id="xtWdPhone" type="tel" inputmode="tel" placeholder="07XX XXX XXX" value="${esc(prof.phone || '')}" required></div>
+        </div>
+        <p class="xt-wd-note"><i class="fas fa-shield-alt"></i> The amount is held as soon as you request it. We review and send it to your M-Pesa; if declined it returns to your balance.</p>
+        <button class="btn btn-primary btn-full" type="submit" id="xtWdBtn"><i class="fas fa-paper-plane"></i> Request withdrawal</button><div class="xt-msg" id="xtWdMsg"></div></form>
+      <h4 style="margin:22px 0 6px;font-size:14px">Recent withdrawals</h4>
+      <div style="overflow:auto"><table class="dash-table"><thead><tr><th>Date</th><th>Amount</th><th>M-Pesa</th><th>Status</th></tr></thead><tbody id="xtWdRows"></tbody></table></div>`;
     w.after(card);
-    const load = async () => { const { data } = await sb().from('withdrawals').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(10);
-      $('#xtWdRows').innerHTML = (data || []).map((r) => `<tr><td>${new Date(r.created_at).toLocaleDateString()}</td><td>${money(r.amount)}</td><td>${esc(r.phone)}</td><td>${pill(r.status)}</td></tr>`).join('') || '<tr><td class="empty-state">No withdrawals yet.</td></tr>'; };
-    await load();
+
+    const refresh = async () => {
+      const [{ data }, p] = await Promise.all([sb().from('withdrawals').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(10), getProfile()]);
+      $('#xtWdRows').innerHTML = (data || []).map((r) => `<tr><td>${new Date(r.created_at).toLocaleDateString()}</td><td>${money(r.amount)}</td><td>${esc(r.phone)}</td><td>${pill(r.status)}</td></tr>`).join('') || '<tr><td colspan="4" class="empty-state">No withdrawals yet.</td></tr>';
+      const bal = Number(p.wallet_balance || 0);
+      $('#xtWdAvail').textContent = money(bal);
+      const big = document.getElementById('walletAmountNum'); if (big) big.textContent = bal.toLocaleString('en-KE');   // keep the Savings Balance card in step
+      return bal;
+    };
+    await refresh();
+    $('#xtWdAll').addEventListener('click', async () => { $('#xtWdAmt').value = Math.floor(await refresh()) || ''; });
+
     $('#xtWdForm').addEventListener('submit', async (e) => {
-      e.preventDefault(); const m = $('#xtWdMsg');
-      const { error } = await sb().rpc('request_withdrawal', { p_amount: $('#xtWdAmt').value, p_phone: $('#xtWdPhone').value });
-      m.className = 'xt-msg ' + (error ? 'err' : 'ok'); m.textContent = error ? error.message : 'Request sent. We will review it shortly.'; if (!error) { e.target.reset(); load(); }
+      e.preventDefault(); const m = $('#xtWdMsg'), b = $('#xtWdBtn');
+      const amt = Number($('#xtWdAmt').value), phone = $('#xtWdPhone').value.trim();
+      const fail = (t) => { m.className = 'xt-msg err'; m.textContent = t; };
+      if (!Number.isInteger(amt) || amt < MIN) return fail('Enter a whole amount of at least ' + money(MIN) + '.');
+      if (!/^(\+?254|0)[17]\d{8}$/.test(phone.replace(/[\s\-()]/g, ''))) return fail('Enter a valid Safaricom number, e.g. 0712 345 678.');
+      b.disabled = true; b.innerHTML = '<span class="btn-spin"></span>Sending request...'; m.textContent = '';
+      const { error } = await sb().rpc('request_withdrawal', { p_amount: amt, p_phone: phone });
+      b.disabled = false; b.innerHTML = '<i class="fas fa-paper-plane"></i> Request withdrawal';
+      if (error) return fail(error.message);
+      m.className = 'xt-msg ok'; m.textContent = 'Request sent. We will review it shortly and send it to your M-Pesa.';
+      $('#xtWdAmt').value = ''; refresh();
     });
   }
 

@@ -111,14 +111,20 @@ signupPasswordInput.addEventListener('input', () => {
   signupPasswordInput.classList.toggle('field-invalid', false); // don't red-flag mid-typing, just show checklist
 });
 
+const authTitle = document.getElementById('authTitle');
+const authSub = document.getElementById('authSub');
 tabLogin.addEventListener('click', () => {
   tabLogin.classList.add('active'); tabSignup.classList.remove('active');
   loginForm.classList.add('active'); signupForm.classList.remove('active');
+  authTitle.textContent = 'Welcome back';
+  authSub.textContent = 'Log in to your portal. Job seekers, employers & staff.';
   clearMsg();
 });
 tabSignup.addEventListener('click', () => {
   tabSignup.classList.add('active'); tabLogin.classList.remove('active');
   signupForm.classList.add('active'); loginForm.classList.remove('active');
+  authTitle.textContent = 'Create your account';
+  authSub.textContent = 'Takes about a minute. Free for job seekers.';
   clearMsg();
 });
 
@@ -233,3 +239,66 @@ signupForm.addEventListener('submit', async (e) => {
   }
   btnOk(btn, 'Account created', 'Create Account');
 });
+
+
+// ---- social icons (configured in site-config.js > SITE_CONFIG.social) ----
+(function renderSocial() {
+  const list = (typeof SITE_CONFIG !== 'undefined' && Array.isArray(SITE_CONFIG.social)) ? SITE_CONFIG.social : [];
+  const safeUrl = (u) => /^https?:\/\//i.test(u);
+  document.querySelectorAll('[data-social]').forEach(row => {
+    list.filter(s => s.url && safeUrl(s.url)).forEach(s => {
+      const link = document.createElement('a');
+      link.href = s.url; link.target = '_blank'; link.rel = 'noopener noreferrer';
+      link.setAttribute('aria-label', s.name); link.title = s.name;
+      if (s.img) {
+        const img = document.createElement('img');
+        img.src = s.img; img.alt = s.name;
+        img.addEventListener('error', () => { link.innerHTML = '<i class="' + s.icon + '"></i>'; }); // fall back to built-in icon
+        link.appendChild(img);
+      } else {
+        link.innerHTML = '<i class="' + s.icon + '"></i>';
+      }
+      row.appendChild(link);
+    });
+    if (!row.children.length) { const box = row.closest('.brand-foot, .mobile-social'); if (box) box.style.display = 'none'; }
+  });
+})();
+
+// ---- Google sign-in ----
+async function googleSignIn(btn, fromSignup) {
+  clearMsg();
+  if (fromSignup) {
+    if (selectedRole === 'employer') {
+      showMsg('Employer accounts need a company name and admin approval, so please sign up with email below. Google sign-in is for job seekers.', 'error');
+      return;
+    }
+    if (!document.getElementById('signupPrivacy').checked) {
+      showMsg('Please tick the Privacy Policy box before continuing with Google.', 'error');
+      return;
+    }
+  }
+  const original = btn.innerHTML;
+  btn.disabled = true;
+  btn.querySelector('span').textContent = 'Opening Google...';
+  let error = null;
+  try {
+    ({ error } = await supabaseClient.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.origin + '/dashboard.html' },
+    }));
+  } catch (e) { console.error(e); error = { message: 'Could not reach Google sign-in. Please refresh and try again.' }; }
+  if (error) {
+    showMsg(error.message, 'error');
+    btn.disabled = false; btn.innerHTML = original;
+  }
+  // on success the browser is redirected to Google, then back to the dashboard
+}
+document.getElementById('googleBtnLogin').addEventListener('click', (e) => googleSignIn(e.currentTarget, false));
+document.getElementById('googleBtnSignup').addEventListener('click', (e) => googleSignIn(e.currentTarget, true));
+
+// ---- show errors Google/Supabase send back in the URL (e.g. user cancelled) ----
+(function showOAuthError() {
+  const params = new URLSearchParams(window.location.search + '&' + window.location.hash.replace(/^#/, ''));
+  const desc = params.get('error_description');
+  if (desc) showMsg(desc.replace(/\+/g, ' '), 'error');
+})();

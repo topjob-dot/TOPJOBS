@@ -31,3 +31,15 @@ New: `extras.css`, `extras.js`, `supabase-portal.sql`. Changed: `index.html`, `l
 - Only the webhook can change a payment's status; clients can only read their own payments, applications and notifications.
 - Job alerts match a job's location/country to the client's "where do you want to work", or its title/category to "what work do you do".
 - Payouts: Dashboard (admin) > Payments & payouts. Log, then Approve. Approving records your decision; it does not send money by itself.
+
+## Google sign-in + M-Pesa withdrawals (latest update)
+1. **Google Cloud Console** > APIs & Services > Credentials > Create OAuth client ID (Web application).
+   Authorised redirect URI: `https://oqptvdxnooyhkfszddsc.supabase.co/auth/v1/callback`. Copy the Client ID and Client Secret.
+2. **Supabase** > Authentication > Providers > Google: switch on, paste Client ID + Secret, Save.
+3. **Supabase** > Authentication > URL Configuration: Site URL `https://topjobsseekers.com`; add `https://topjobsseekers.com/dashboard.html` to Redirect URLs.
+4. **Supabase > SQL Editor**: paste all of `supabase-withdrawals.sql`, press Run (safe to re-run).
+5. **site-config.js**: fill the `social` list with your links (and `img` paths if you upload your own icons to `images/social/`).
+6. Upload to GitHub: `login.html`, `auth.js`, `extras.js`, `extras.css`, `site-config.js`, `supabase-withdrawals.sql`.
+
+Withdrawals: the client's money is held the moment they request. In Dashboard (admin) > Payments & payouts > Withdrawal requests:
+Approve, send the M-Pesa yourself, then press Mark paid. Reject returns the money to the client automatically.

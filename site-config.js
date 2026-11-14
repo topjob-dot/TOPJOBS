@@ -34,5 +34,22 @@ const SITE_CONFIG = {
   // Show a licence badge in the footer ONLY once you fill this in, e.g. 'NEA/PVT/2026/0000'. Leave '' to show nothing.
   agencyLicence: '',
 
+
+  // Social icons on the login page. Leave url '' to hide an icon.
+  // To use YOUR OWN icon image, upload it to images/social/ on GitHub and set img, e.g. img: 'images/social/facebook.png'
+  // (leave img '' to use the built-in icon).
+  social: [
+    { name: 'Instagram', url: 'https://www.instagram.com/topjobsseekers?xtok=ZGpoaHN1eXZjNzg=', icon: 'fa-brands fa-instagram', img: '' },
+    { name: 'Facebook',  url: '', icon: 'fa-brands fa-facebook-f', img: '' },
+    { name: 'TikTok',    url: '', icon: 'fa-brands fa-tiktok',     img: '' },
+    { name: 'X',         url: '', icon: 'fa-brands fa-x-twitter',  img: '' },
+    { name: 'LinkedIn',  url: '', icon: 'fa-brands fa-linkedin-in',img: '' },
+    { name: 'YouTube',   url: '', icon: 'fa-brands fa-youtube',    img: '' },
+    { name: 'WhatsApp',  url: 'https://wa.me/254748801685', icon: 'fa-brands fa-whatsapp', img: '' },
+  ],
+
+  // Withdrawals: smallest amount a client can request (also enforced in the database, see supabase-withdrawals.sql)
+  minWithdrawal: 100,
+
   sendApplicationUrl: SUPABASE_URL + '/functions/v1/send-application',
 };

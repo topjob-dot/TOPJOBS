@@ -106,3 +106,10 @@ html[data-theme="dark"] .stat-num,
 html[data-theme="dark"] .step-card h3,
 html[data-theme="dark"] .testi-author strong,
 html[data-theme="dark"] .trust-card h3{color:var(--heading)}
+
+/* withdraw card */
+.xt-wd-head{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.xt-wd-icon{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:#e6f7f1;color:#0a7c4e;font-size:20px;flex-shrink:0}
+.xt-link{background:none;border:0;color:var(--blue);font-weight:600;font-size:12px;padding:6px 0 0;cursor:pointer;font-family:inherit}
+.xt-wd-note{font-size:12.5px;color:var(--text-muted);margin:2px 0 14px}.xt-wd-note i{color:#0a7c4e;margin-right:6px}
+html[data-theme="dark"] .xt-wd-icon{background:#1b2b27;color:#5fd4a4}
