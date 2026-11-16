@@ -21,7 +21,7 @@
   (function rain() {
     const strip = document.getElementById('rainStrip'), grid = document.getElementById('rainGrid');
     if (!strip || !grid || typeof COUNTRY_LIST === 'undefined') return;
-    grid.innerHTML = COUNTRY_LIST.map((c, i) => `<span class="rain-chip" style="--i:${i}">${flagFromEmoji(c.flag)} ${c.name}<i class="rp"></i></span>`).join('');
+    grid.innerHTML = COUNTRY_LIST.map((c, i) => `<span class="rain-chip" role="button" tabindex="0" data-cty="${c.name}" style="--i:${i}">${flagFromEmoji(c.flag)} ${c.name}<i class="rp"></i></span>`).join('');
     const chips = [...grid.children];
     if (reduce) { strip.classList.add('go'); return; }
 
@@ -43,14 +43,30 @@
         rp.classList.remove('ping'); void rp.offsetWidth; rp.classList.add('ping');
       }
     };
+    /* Replays every time the strip comes back on screen, scrolling down OR up. */
     const io = new IntersectionObserver((entries) => {
       entries.forEach((en) => {
-        if (en.isIntersecting) { strip.classList.add('go'); if (!timer) timer = setInterval(splash, 520); }
-        else if (timer) { clearInterval(timer); timer = null; }
+        if (en.isIntersecting && en.intersectionRatio >= .25) {
+          strip.classList.add('go'); if (!timer) timer = setInterval(splash, 520);
+        } else if (en.intersectionRatio === 0) {                                   // fully gone: reset so it can play again
+          strip.classList.remove('go');
+          if (timer) { clearInterval(timer); timer = null; }
+          strip.querySelectorAll('.rain-drop,.rain-ring').forEach((n) => n.remove());
+        }
       });
-    }, { threshold: .25 });
+    }, { threshold: [0, .25] });
     io.observe(strip);
     document.addEventListener('visibilitychange', () => { if (document.hidden && timer) { clearInterval(timer); timer = null; } });
+    /* tap a country = jobs list filtered to that country */
+    const pick = (name) => {
+      const sel = document.getElementById('locationFilter'), kw = document.getElementById('searchInput');
+      document.querySelector('.jobs-tab[data-tab="all"]')?.click();
+      if (kw) kw.value = '';
+      if (sel) { sel.value = name; if (sel.value !== name) { sel.value = ''; if (kw) kw.value = name; } }
+      if (typeof filterAndScroll === 'function') filterAndScroll();
+    };
+    grid.addEventListener('click', (e) => { const c = e.target.closest('.rain-chip'); if (c) pick(c.dataset.cty); });
+    grid.addEventListener('keydown', (e) => { if (e.key !== 'Enter' && e.key !== ' ') return; const c = e.target.closest('.rain-chip'); if (c) { e.preventDefault(); pick(c.dataset.cty); } });
     grid.addEventListener('pointerdown', (e) => {                                   // tap a country = ripple under your finger
       const c = e.target.closest('.rain-chip'); if (!c) return;
       const rp = c.querySelector('.rp'); rp.classList.remove('ping'); void rp.offsetWidth; rp.classList.add('ping');

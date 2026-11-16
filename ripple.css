@@ -1,0 +1,56 @@
+/* =====================================================================
+   ripple.css (home page, loaded after smooth.css)
+   1. Bubble buttons   2. Ripple on category cards + the two form blocks
+   3. Hero video       4. Glowing Instagram button (left, opposite WhatsApp)
+   ===================================================================== */
+:root { --rip-c: rgba(31, 92, 82, .4); }
+html[data-theme="dark"] { --rip-c: rgba(255, 255, 255, .38); }
+
+/* ---------- 1. Bubble buttons (same shape as the country bubbles) ---------- */
+.btn, .jobs-tab, .cat-go, .btn-apply, .btn-whatsapp-nav, .btn-ghost-dark { border-radius: 100px !important; }
+.btn-ghost, .btn-outline, .btn-ghost-dark { background-color: rgba(255, 255, 255, .11); }
+.btn-primary, .btn-whatsapp, .btn-whatsapp-nav { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .25); }
+.choice-card { border-radius: 30px !important; }
+.btn-full { justify-content: center; }
+.tjs-ring { position: absolute; z-index: 9990; pointer-events: none; width: var(--w, 24px); height: calc(var(--w, 24px) * .36); margin-left: calc(var(--w, 24px) / -2); border: 1.5px solid rgba(255, 255, 255, .75); box-shadow: 0 0 0 1px rgba(31, 92, 82, .28); border-radius: 50%; opacity: 0; animation: ring 1.4s ease-out forwards; }
+.tjs-ring.fx { position: fixed; }
+
+/* ---------- 2. Ripple on cards / form blocks ---------- */
+.rip-host { position: relative; isolation: isolate; }
+.rip-layer { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; border-radius: inherit; }
+.rip-ring { position: absolute; width: 30px; height: 11px; margin: -5px 0 0 -15px; border: 1.5px solid var(--rip-c); border-radius: 50%; opacity: 0; animation: ripRing 1.6s ease-out forwards; }
+.rip-drop { position: absolute; top: -20px; width: 2px; height: 16px; border-radius: 2px; background: linear-gradient(to bottom, transparent, var(--rip-c)); animation: dropFall var(--t, .75s) cubic-bezier(.4, 0, 1, 1) forwards; }
+@keyframes ripRing { 0% { opacity: .95; transform: scale(.3); } 100% { opacity: 0; transform: scale(calc(var(--k, 1) * 4.6), calc(var(--k, 1) * 3.2)); } }
+
+/* category cards: drop in like the country bubbles, then rings spread underneath (replays up and down) */
+.rip-ready .rip-host[data-rip="card"]:not(.rip-in) { translate: 0 -52px; scale: .92; }
+.rip-host[data-rip="card"].rip-in { animation: cardDrop .95s cubic-bezier(.34, 1.56, .64, 1) both; animation-delay: var(--d, 0ms); }
+@keyframes cardDrop { 0% { translate: 0 -52px; scale: .92; } 100% { translate: 0 0; scale: 1; } }
+.rip-host[data-rip="card"] .rip-layer::before, .rip-host[data-rip="card"] .rip-layer::after { content: ""; position: absolute; left: 50%; bottom: 14px; width: 26%; height: 9%; margin-left: -13%; border: 1.5px solid var(--rip-c); border-radius: 50%; opacity: 0; }
+.rip-host[data-rip="card"].rip-in .rip-layer::before { animation: ripRing 1.6s ease-out both; animation-delay: calc(var(--d, 0ms) + 560ms); }
+.rip-host[data-rip="card"].rip-in .rip-layer::after { animation: ripRing 1.6s ease-out both; animation-delay: calc(var(--d, 0ms) + 860ms); }
+.cat-card, .rain-chip { cursor: pointer; }
+.rain-chip:active { scale: .93; }
+
+/* ---------- 3. Hero video ---------- */
+.hero-video-wrap { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+.hero-video { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1.2s ease; }
+.hero-video.playing { opacity: 1; }
+.hero-video-shade { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(27, 59, 52, .9) 0%, rgba(31, 92, 82, .74) 50%, rgba(10, 22, 40, .8) 100%); }
+
+/* ---------- 4. Glowing Instagram button (left side, pulses in turn with WhatsApp) ---------- */
+.ig-fab { position: fixed; left: 14px; bottom: 20px; z-index: 1200; width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-size: 30px; background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); box-shadow: 0 8px 22px rgba(214, 36, 159, .45); transition: transform .3s var(--spring, ease); }
+.ig-fab:hover, .ig-fab:focus-visible { transform: scale(1.08); }
+.ig-fab:active { transform: scale(.94); }
+.ig-fab::before, .ig-fab::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fd5949 45%, #d6249f 60%, #285AEB 90%); z-index: -1; animation: waGlow 2.4s ease-out infinite; animation-delay: .6s; }
+.ig-fab::after { animation-delay: 1.8s; }
+.ig-tip { position: absolute; left: 70px; top: 50%; transform: translate(-10px, -50%); white-space: nowrap; background: #fff; color: #1b3a33; font: 700 13px var(--font, sans-serif); padding: 9px 14px; border-radius: 100px; box-shadow: 0 8px 24px rgba(0, 0, 0, .18); opacity: 0; pointer-events: none; transition: opacity .4s ease, transform .4s var(--spring, ease); }
+.ig-tip.show { opacity: 1; transform: translate(0, -50%); }
+@media (max-width: 480px) { .ig-fab { left: 12px; bottom: 16px; width: 56px; height: 56px; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .rip-ready .rip-host[data-rip="card"]:not(.rip-in) { translate: none; scale: 1; }
+  .rip-host[data-rip="card"].rip-in { animation: none; }
+  .rip-ring, .rip-drop, .tjs-ring, .ig-fab::before, .ig-fab::after, .rip-layer::before, .rip-layer::after { display: none !important; }
+  .hero-video-wrap { display: none; }
+}

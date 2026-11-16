@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 <link rel="stylesheet" href="extras.css" />
 <link rel="stylesheet" href="smooth.css" />
+<link rel="stylesheet" href="ripple.css" />
 <script src="extras.js"></script>
 </head>
 <body>
@@ -74,6 +75,10 @@
 
   <!-- ===== HERO ===== -->
   <section class="hero" id="home">
+    <div class="hero-video-wrap" aria-hidden="true">
+      <video id="heroVideo" class="hero-video" muted loop playsinline preload="none" disablepictureinpicture></video>
+      <div class="hero-video-shade"></div>
+    </div>
     <div class="hero-bg-shapes">
       <div class="shape shape-1"></div>
       <div class="shape shape-2"></div>
@@ -780,5 +785,6 @@
   <script src="consent.js"></script>
   <script src="chat-widget.js"></script>
   <script src="smooth.js"></script>
+  <script src="ripple.js"></script>
 </body>
 </html>
