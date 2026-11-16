@@ -48,3 +48,9 @@ Approve, send the M-Pesa yourself, then press Mark paid. Reject returns the mone
 - Re-run `supabase-withdrawals.sql` in the SQL Editor (safe to re-run). It adds `recent_paid_withdrawals()`, which feeds the home-page popups.
 - Popups show ONLY real withdrawals you have marked "Paid" (first name, amount, time). With no paid withdrawals, nothing appears.
 - Upload: `jobs.js`, `dashboard.html`, `extras.js`, `extras.css`, `supabase-withdrawals.sql`.
+
+## Smooth scrolling, job cards, WhatsApp, country rain, login to apply
+- New files: `smooth.css`, `smooth.js` (upload both). Also upload: `index.html`, `script.js`, `jobs.js`, `auth.js`.
+- Job cards show the whole picture; "View & Apply" is a full-width button at the bottom and opens the full job details.
+- Applying needs a logged-in account. Logged-out visitors see "Log in / Create free account" and return to the same job after logging in.
+- The WhatsApp button uses `whatsappNumber` in site-config.js.

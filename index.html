@@ -16,6 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 <link rel="stylesheet" href="extras.css" />
+<link rel="stylesheet" href="smooth.css" />
 <script src="extras.js"></script>
 </head>
 <body>
@@ -126,11 +127,10 @@
     </div>
   </section>
 
-  <!-- ===== MARQUEE STRIP (flag + country slide together) ===== -->
-  <div class="marquee-strip">
-    <div class="marquee-track" id="marqueeTrack">
-      <!-- populated by script.js from the same country list, flag glued to name -->
-    </div>
+  <!-- ===== COUNTRIES: ripple rain (built by smooth.js) ===== -->
+  <div class="rain-strip" id="rainStrip" aria-label="Countries we place job seekers in">
+    <div class="rain-title">We place you in</div>
+    <div class="rain-grid" id="rainGrid"></div>
   </div>
 
   <!-- ===== HOT ALERTS (post from Dashboard → Hot Alert; hidden when none are active) ===== -->
@@ -779,5 +779,6 @@
   <script src="ui.js"></script>
   <script src="consent.js"></script>
   <script src="chat-widget.js"></script>
+  <script src="smooth.js"></script>
 </body>
 </html>

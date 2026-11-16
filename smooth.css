@@ -1,0 +1,78 @@
+/* =====================================================================
+   smooth.css: loaded LAST on the home page. Smooth, iOS-like motion,
+   full-image job cards, glowing WhatsApp button, country "ripple rain".
+   ===================================================================== */
+
+/* ---------- 1. Smoothness: cheaper painting while scrolling ---------- */
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body { -webkit-font-smoothing: antialiased; text-rendering: optimizeSpeed; }
+a, button, [role="button"], .job-card { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+/* a live blur behind the sticky bar is re-painted on every scroll frame; the bar is ~opaque anyway */
+.navbar, .navbar.scrolled, .drawer-overlay { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+.navbar.scrolled { background: rgba(10, 22, 40, .98); }
+
+/* iOS-style spring ease for everything that reveals as you scroll */
+:root { --spring: cubic-bezier(.22, 1, .36, 1); }
+.reveal { transform: translate3d(0, 22px, 0); transition: opacity .7s var(--spring), transform .7s var(--spring); }
+.reveal.in-view { transform: none; }
+
+/* off-screen cards are skipped by the browser until they get near the screen */
+.job-card { content-visibility: auto; contain-intrinsic-size: auto 560px; }
+.job-card.reveal { transition: opacity .7s var(--spring), transform .7s var(--spring), box-shadow .35s ease, border-color .25s ease; }
+.job-card.reveal.in-view:hover { transform: translate3d(0, -4px, 0); }
+/* looping animations stop while off-screen (toggled by smooth.js) */
+.is-offscreen, .is-offscreen::before, .is-offscreen::after { animation-play-state: paused !important; }
+
+/* ---------- 2. Job cards: show the WHOLE picture, button at the bottom ---------- */
+.job-photo { height: auto; min-height: 150px; background: #f2f0ea; display: block; }
+.job-photo img { display: block; width: 100%; height: auto; max-height: 520px; object-fit: contain; transform: none; transition: opacity .45s ease; }
+.job-photo img.loaded { transform: none; }
+.job-photo img:not([src]) { display: none; }
+.job-photo-fallback { position: absolute; inset: 0; display: grid; place-items: center; font-size: 34px; }
+.job-photo.poster img { object-position: center; }
+.job-card .job-footer { margin-top: auto; padding-top: 6px; }
+.job-card .btn-apply { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; margin-top: 14px; padding: 13px 18px; border-radius: 14px; font-size: 15px; }
+
+/* ---------- 3. Apply panel when logged out ---------- */
+.jm-gate { text-align: center; padding: 6px 2px 2px; }
+.jm-gate-ico { width: 62px; height: 62px; margin: 0 auto 12px; border-radius: 50%; display: grid; place-items: center; background: var(--blue-light); color: var(--blue); font-size: 26px; }
+.jm-gate h3 { color: var(--navy); margin: 0 0 6px; font-size: 20px; }
+.jm-gate p { color: var(--text-muted); font-size: 14px; margin: 0 0 16px; }
+.jm-gate .btn { margin-bottom: 10px; }
+.jm-gate small { display: block; color: var(--text-muted); font-size: 12px; margin-top: 4px; }
+
+/* ---------- 4. Glowing WhatsApp button ---------- */
+.wa-fab { position: fixed; right: 14px; bottom: 20px; z-index: 1200; width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center; background: #25D366; color: #fff; font-size: 31px; box-shadow: 0 8px 22px rgba(37, 211, 102, .45); transition: transform .3s var(--spring); }
+.wa-fab:hover, .wa-fab:focus-visible { transform: scale(1.08); }
+.wa-fab:active { transform: scale(.94); }
+.wa-fab::before, .wa-fab::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: #25D366; z-index: -1; animation: waGlow 2.4s ease-out infinite; }
+.wa-fab::after { animation-delay: 1.2s; }
+@keyframes waGlow { 0% { transform: scale(1); opacity: .55; } 100% { transform: scale(1.9); opacity: 0; } }
+.wa-tip { position: absolute; right: 70px; top: 50%; transform: translate(10px, -50%); white-space: nowrap; background: #fff; color: #1b3a33; font: 700 13px var(--font, sans-serif); padding: 9px 14px; border-radius: 100px; box-shadow: 0 8px 24px rgba(0, 0, 0, .18); opacity: 0; pointer-events: none; transition: opacity .4s ease, transform .4s var(--spring); }
+.wa-tip.show { opacity: 1; transform: translate(0, -50%); }
+.back-top { bottom: 92px; right: 18px; }
+@media (max-width: 480px) { .wa-fab { right: 12px; bottom: 16px; width: 56px; height: 56px; } .back-top { right: 16px; bottom: 86px; } }
+
+/* ---------- 5. Countries: ripple rain ---------- */
+.rain-strip { position: relative; overflow: hidden; isolation: isolate; padding: 30px 0 38px; background: radial-gradient(120% 140% at 50% 0%, #2a7566 0%, #1F5C52 55%, #17453D 100%); }
+.rain-title { position: relative; z-index: 2; text-align: center; margin-bottom: 20px; color: rgba(255, 255, 255, .72); font: 700 11px/1 var(--font-display, sans-serif); letter-spacing: 2.4px; text-transform: uppercase; }
+.rain-grid { position: relative; z-index: 2; display: flex; flex-wrap: wrap; justify-content: center; gap: 14px 10px; max-width: 780px; margin: 0 auto; padding: 0 16px; }
+.rain-chip { position: relative; display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 100px; font-weight: 600; font-size: 14px; color: #fff; background: rgba(255, 255, 255, .11); border: 1px solid rgba(255, 255, 255, .24); opacity: 0; transform: translate3d(0, -80px, 0) scale(.85); }
+.rain-chip .flag-ico { width: 20px; height: 14px; object-fit: cover; border-radius: 2px; }
+/* the drop lands, then two rings spread out underneath it */
+.rain-strip.go .rain-chip { animation: chipDrop .95s cubic-bezier(.34, 1.56, .64, 1) forwards; animation-delay: calc(var(--i) * 130ms); }
+@keyframes chipDrop { 0% { opacity: 0; transform: translate3d(0, -80px, 0) scale(.85); } 50% { opacity: 1; } 100% { opacity: 1; transform: none; } }
+.rain-chip::before, .rain-chip::after, .rain-chip .rp { content: ""; position: absolute; left: 50%; bottom: -7px; width: 22px; height: 8px; margin-left: -11px; border: 1.5px solid rgba(255, 255, 255, .6); border-radius: 50%; opacity: 0; pointer-events: none; }
+.rain-strip.go .rain-chip::before { animation: ring 1.5s ease-out forwards; animation-delay: calc(var(--i) * 130ms + 560ms); }
+.rain-strip.go .rain-chip::after { animation: ring 1.5s ease-out forwards; animation-delay: calc(var(--i) * 130ms + 860ms); }
+.rain-chip .rp.ping { animation: ring 1.5s ease-out; }
+@keyframes ring { 0% { opacity: .9; transform: scale(.3); } 100% { opacity: 0; transform: scale(4.6, 3.2); } }
+/* background rain: thin drops that fall and splash on the water */
+.rain-drop { position: absolute; z-index: 1; top: -20px; width: 2px; height: 16px; border-radius: 2px; background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, .75)); animation: dropFall var(--t, .75s) cubic-bezier(.4, 0, 1, 1) forwards; }
+@keyframes dropFall { to { transform: translate3d(0, var(--y, 120px), 0); opacity: .9; } }
+.rain-ring { position: absolute; z-index: 1; width: 26px; height: 9px; margin: -4px 0 0 -13px; border: 1.5px solid rgba(255, 255, 255, .5); border-radius: 50%; animation: ring 1.6s ease-out forwards; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) {
+  .rain-chip { opacity: 1 !important; transform: none !important; animation: none !important; }
+  .rain-chip::before, .rain-chip::after, .rain-drop, .rain-ring, .wa-fab::before, .wa-fab::after { display: none !important; }
+  .reveal { transform: none; }
+}

@@ -140,10 +140,18 @@ document.querySelectorAll('.role-option').forEach(opt => {
   });
 });
 
+// ---- where to go after login: ?next=index.html?job=ID (same-site pages only) ----
+const _qs = new URLSearchParams(window.location.search);
+function safeNext() {
+  const n = _qs.get('next');
+  return n && /^[A-Za-z0-9_-]+\.html(\?[A-Za-z0-9_=&%.-]*)?(#[A-Za-z0-9_-]*)?$/.test(n) ? n : null;
+}
+if (_qs.get('tab') === 'signup') tabSignup.click();
+
 // ---- redirect if already logged in ----
 (async () => {
   const { data: { session } } = await supabaseClient.auth.getSession();
-  if (session) window.location.href = 'dashboard.html';
+  if (session) window.location.href = safeNext() || 'dashboard.html';
 })();
 
 // ---- login ----
@@ -171,7 +179,7 @@ loginForm.addEventListener('submit', async (e) => {
     btn.disabled = false; btn.textContent = 'Log In';
     return;
   }
-  window.location.href = 'dashboard.html';
+  window.location.href = safeNext() || 'dashboard.html';
 });
 
 // ---- signup ----
@@ -284,7 +292,7 @@ async function googleSignIn(btn, fromSignup) {
   try {
     ({ error } = await supabaseClient.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: window.location.origin + '/dashboard.html' },
+      options: { redirectTo: window.location.origin + (safeNext() ? '/login.html?next=' + encodeURIComponent(safeNext()) : '/dashboard.html') },
     }));
   } catch (e) { console.error(e); error = { message: 'Could not reach Google sign-in. Please refresh and try again.' }; }
   if (error) {

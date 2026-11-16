@@ -186,13 +186,16 @@ async function loadTestimonials() {
 
 // ===== NAVBAR SCROLL =====
 const navbar = document.getElementById('navbar');
+let scrollTick = false, wasScrolled = null, wasBack = null;
 window.addEventListener('scroll', () => {
-  if (window.scrollY > 60) navbar?.classList.add('scrolled');
-  else navbar?.classList.remove('scrolled');
-
-  const btn = document.getElementById('backTop');
-  if (window.scrollY > 400) btn?.classList.add('visible');
-  else btn?.classList.remove('visible');
+  if (scrollTick) return;                       // at most one update per frame
+  scrollTick = true;
+  requestAnimationFrame(() => {
+    scrollTick = false;
+    const y = window.scrollY, scrolled = y > 60, back = y > 400;
+    if (scrolled !== wasScrolled) { navbar?.classList.toggle('scrolled', scrolled); wasScrolled = scrolled; }
+    if (back !== wasBack) { document.getElementById('backTop')?.classList.toggle('visible', back); wasBack = back; }
+  });
 }, { passive: true });
 
 // ===== BACK TO TOP =====

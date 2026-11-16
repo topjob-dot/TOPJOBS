@@ -10,6 +10,11 @@ let JOBS = [];                 // every active job, normalised
 let activeTab = 'all';         // 'all' | 'kenya' | 'international'
 let visibleCount = SITE_CONFIG.pageSize;
 let currentList = [];          // jobs matching the current tab + filters
+let authUser = null;           // set when the visitor is logged in (applications need an account)
+try {
+  supabaseClient.auth.getSession().then(({ data }) => { authUser = data?.session?.user || null; });
+  supabaseClient.auth.onAuthStateChange((_e, s) => { authUser = s?.user || null; });
+} catch (e) { console.warn('auth state', e); }
 let openJob = null;            // job shown in the modal
 let modalFile = null;          // CV chosen in the modal
 
@@ -90,6 +95,18 @@ async function loadJobs() {
   updateCounts();
   renderHot();
   applyFilters(false);
+  openJobFromUrl();
+}
+
+// After logging in, visitors return to ?job=ID and the job opens by itself.
+let urlJobDone = false;
+function openJobFromUrl() {
+  if (urlJobDone) return;
+  const id = new URLSearchParams(location.search).get('job');
+  if (!id) { urlJobDone = true; return; }
+  urlJobDone = true;
+  history.replaceState(null, '', location.pathname + location.hash);
+  supabaseClient.auth.getSession().then(({ data }) => { authUser = data?.session?.user || null; openJobModal(id); });
 }
 
 // Jobs added/changed in the dashboard (or by the auto-fetch) appear without a reload.
@@ -229,7 +246,7 @@ function renderJobs() {
     return `
     <article class="job-card reveal" tabindex="0" role="button" aria-label="View details and apply: ${esc(j.title)}" data-job-id="${esc(j.id)}">
       <div class="job-photo${j.is_poster ? ' poster' : ''}" data-job-id="${esc(j.id)}">
-        <img alt="" loading="lazy" ${j.image_url ? `src="${esc(j.image_url)}" class="loaded"` : ''} />
+        <img alt="" loading="lazy" decoding="async" ${j.image_url ? `src="${esc(j.image_url)}" class="loaded"` : ''} />
         <span class="job-photo-fallback">${esc(j.icon)}</span>
         <span class="job-badge badge-${j.is_hot ? 'hot' : esc(j.badge)}">${j.is_hot ? '🔥 HOT' : esc(String(j.badge).toUpperCase())}</span>
       </div>
@@ -243,8 +260,8 @@ function renderJobs() {
       <div class="job-salary">${esc(j.salary)}</div>
       <div class="job-footer">
         <span class="job-date">${j.posted ? `<i class="fas fa-clock" style="margin-right:4px;"></i>${esc(j.posted)}` : ''}</span>
-        <span class="btn btn-primary btn-apply">View &amp; Apply</span>
       </div>
+      <span class="btn btn-primary btn-apply">View &amp; Apply <i class="fas fa-arrow-right"></i></span>
     </article>`;
   }).join('');
 
@@ -321,6 +338,41 @@ function openJobModal(id) {
   const li = (arr) => arr.map((x) => `<li>${esc(x)}</li>`).join('');
   const hasOwnLink = j.apply_method === 'link' && j.apply_url && j.source === 'manual';
 
+  const nextUrl = 'index.html?job=' + encodeURIComponent(j.id);
+  const gatePanel = `
+        <div class="jm-gate">
+          <div class="jm-gate-ico"><i class="fas fa-lock"></i></div>
+          <h3>Log in to apply</h3>
+          <p>Applications are for registered job seekers. It is free and takes about a minute.</p>
+          <a class="btn btn-primary btn-full" href="login.html?next=${encodeURIComponent(nextUrl)}"><i class="fas fa-right-to-bracket"></i> Log in</a>
+          <a class="btn btn-outline btn-full" href="login.html?next=${encodeURIComponent(nextUrl)}&tab=signup"><i class="fas fa-user-plus"></i> Create free account</a>
+          <small>You will come straight back to this job.</small>
+        </div>`;
+  const applyPanel = `
+        <h3><i class="fas fa-paper-plane"></i> Apply for this job</h3>
+        <p class="jm-apply-sub">Upload your CV and we email it straight to our recruitment team.</p>
+        ${hasOwnLink ? `<a class="btn btn-outline btn-full jm-ext" href="${esc(j.apply_url)}" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt"></i> Apply on employer's form</a><div class="jm-or"><span>or send your CV here</span></div>` : ''}
+        <form id="jobApplyForm" novalidate>
+          <input type="text" name="website" tabindex="-1" autocomplete="off" class="hp-field" aria-hidden="true" />
+          <div class="form-group"><label for="jaName">Full name *</label><input id="jaName" type="text" placeholder="e.g. Jane Wanjiku" required autocomplete="name" /></div>
+          <div class="form-group"><label for="jaPhone">Phone / WhatsApp *</label><input id="jaPhone" type="tel" placeholder="+254 7XX XXX XXX" required autocomplete="tel" /></div>
+          <div class="form-group"><label for="jaEmail">Email *</label><input id="jaEmail" type="email" placeholder="jane@example.com" required autocomplete="email" /></div>
+          <div class="form-group">
+            <label>Your CV (PDF or Word, max 8MB) *</label>
+            <div class="file-drop" id="jaDrop"><i class="fas fa-cloud-upload-alt"></i><span id="jaFileLabel">Tap to choose your CV</span>
+              <input type="file" id="jaFile" accept=".pdf,.doc,.docx" hidden /></div>
+          </div>
+          <div class="form-group"><label for="jaMsg">Short message (optional)</label><textarea id="jaMsg" rows="2" placeholder="Anything the employer should know?"></textarea></div>
+          <button type="submit" class="btn btn-primary btn-full" id="jaSubmit"><i class="fas fa-paper-plane"></i> Send my application</button>
+          <div class="cv-error hidden" id="jaError"><i class="fas fa-exclamation-circle"></i> <span></span></div>
+        </form>
+        <div class="jm-success hidden" id="jaSuccess">
+          <i class="fas fa-check-circle"></i>
+          <h3>Application sent!</h3>
+          <p id="jaSuccessText">Thank you. Our team will review your CV and contact you within 48 hours.</p>
+          <button class="btn btn-outline" type="button" data-close-modal>Back to jobs</button>
+        </div>`;
+
   document.getElementById('jobModalBody').innerHTML = `
     <div class="jm-grid">
       <div class="jm-details">
@@ -353,34 +405,11 @@ function openJobModal(id) {
         ${d.respGenerated || d.reqGenerated ? '<p class="jm-note"><i class="fas fa-info-circle"></i> Where details are marked "typical", the employer confirms the final requirements at interview.</p>' : ''}`}
       </div>
 
-      <aside class="jm-apply">
-        <h3><i class="fas fa-paper-plane"></i> Apply for this job</h3>
-        <p class="jm-apply-sub">Upload your CV and we email it straight to our recruitment team.</p>
-        ${hasOwnLink ? `<a class="btn btn-outline btn-full jm-ext" href="${esc(j.apply_url)}" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt"></i> Apply on employer's form</a><div class="jm-or"><span>or send your CV here</span></div>` : ''}
-        <form id="jobApplyForm" novalidate>
-          <input type="text" name="website" tabindex="-1" autocomplete="off" class="hp-field" aria-hidden="true" />
-          <div class="form-group"><label for="jaName">Full name *</label><input id="jaName" type="text" placeholder="e.g. Jane Wanjiku" required autocomplete="name" /></div>
-          <div class="form-group"><label for="jaPhone">Phone / WhatsApp *</label><input id="jaPhone" type="tel" placeholder="+254 7XX XXX XXX" required autocomplete="tel" /></div>
-          <div class="form-group"><label for="jaEmail">Email *</label><input id="jaEmail" type="email" placeholder="jane@example.com" required autocomplete="email" /></div>
-          <div class="form-group">
-            <label>Your CV (PDF or Word, max 8MB) *</label>
-            <div class="file-drop" id="jaDrop"><i class="fas fa-cloud-upload-alt"></i><span id="jaFileLabel">Tap to choose your CV</span>
-              <input type="file" id="jaFile" accept=".pdf,.doc,.docx" hidden /></div>
-          </div>
-          <div class="form-group"><label for="jaMsg">Short message (optional)</label><textarea id="jaMsg" rows="2" placeholder="Anything the employer should know?"></textarea></div>
-          <button type="submit" class="btn btn-primary btn-full" id="jaSubmit"><i class="fas fa-paper-plane"></i> Send my application</button>
-          <div class="cv-error hidden" id="jaError"><i class="fas fa-exclamation-circle"></i> <span></span></div>
-        </form>
-        <div class="jm-success hidden" id="jaSuccess">
-          <i class="fas fa-check-circle"></i>
-          <h3>Application sent!</h3>
-          <p id="jaSuccessText">Thank you. Our team will review your CV and contact you within 48 hours.</p>
-          <button class="btn btn-outline" type="button" data-close-modal>Back to jobs</button>
-        </div>
+      <aside class="jm-apply">${authUser ? applyPanel : gatePanel}
       </aside>
     </div>`;
 
-  wireApplyForm();
+  if (authUser) { wireApplyForm(); prefillApply(); }
   const modal = document.getElementById('jobModal');
   modal.classList.add('open');
   modal.setAttribute('aria-hidden', 'false');
@@ -454,6 +483,14 @@ async function submitApplication({ job, name, phone, email, message, file, honey
   return { emailed: false };
 }
 
+async function prefillApply() {
+  try {
+    const { data: p } = await supabaseClient.from('profiles').select('full_name,phone,email').eq('id', authUser.id).maybeSingle();
+    const set = (id, v) => { const el = document.getElementById(id); if (el && !el.value && v) el.value = v; };
+    set('jaName', p?.full_name); set('jaPhone', p?.phone); set('jaEmail', p?.email || authUser.email);
+  } catch (e) { console.warn('prefill', e); }
+}
+
 function wireApplyForm() {
   const drop = document.getElementById('jaDrop'), input = document.getElementById('jaFile'), label = document.getElementById('jaFileLabel');
   drop.addEventListener('click', () => input.click());
@@ -470,6 +507,7 @@ function wireApplyForm() {
   document.getElementById('jobApplyForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     hideApplyError();
+    if (!authUser) return showApplyError('Please log in to send your application.');
     const name = document.getElementById('jaName').value.trim();
     const phone = document.getElementById('jaPhone').value.trim();
     const email = document.getElementById('jaEmail').value.trim();
