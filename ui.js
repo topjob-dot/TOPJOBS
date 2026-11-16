@@ -57,6 +57,13 @@
     });
   });
 
+  // Category bubbles: tap = show that sector's open jobs
+  document.querySelectorAll('.cat-chip').forEach((chip) => {
+    const go = () => { if (typeof filterByCategory === 'function') filterByCategory(chip.dataset.category); };
+    chip.addEventListener('click', go);
+    chip.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+  });
+
   // How-it-works steps
   document.querySelectorAll('.step-card').forEach((card) => {
     const go = () => toggle(card, '.step-card', !card.classList.contains('open'));

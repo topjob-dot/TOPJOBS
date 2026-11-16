@@ -3,7 +3,7 @@
    cards, trust + FAQ, cookie banner, legal pages.  (loads after enhancements.css)
    ===================================================================== */
 html { scroll-behavior: smooth; scroll-padding-top: 84px; }
-.skip-link { position: absolute; left: 12px; top: -60px; z-index: 5000; background: var(--gold); color: #1c2623; padding: 10px 16px; border-radius: 10px; font-weight: 700; transition: top .2s; }
+.skip-link { position: absolute; left: 12px; top: -60px; z-index: 5000; background: var(--gold); color: #0d1d3e; padding: 10px 16px; border-radius: 10px; font-weight: 700; transition: top .2s; }
 .skip-link:focus { top: 12px; }
 :focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
 
@@ -94,7 +94,7 @@ body.drawer-open { overflow: hidden; }
 /* ---------- Category cards (image slot + animated dropdown) ---------- */
 .categories-grid { align-items: start; }
 .cat-card { padding: 0 !important; overflow: hidden; cursor: pointer; text-align: left; position: relative; }
-.cat-media { position: relative; height: 130px; overflow: hidden; background: linear-gradient(135deg, var(--blue-light), #f3e9d6); }
+.cat-media { position: relative; height: 130px; overflow: hidden; background: linear-gradient(135deg, var(--blue-light), #e8edf7); }
 .cat-media img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease; }
 .cat-card:hover .cat-media img { transform: scale(1.06); }
 .cat-media.empty { display: none; }
@@ -161,16 +161,16 @@ body.drawer-open { overflow: hidden; }
 .footer-legal a:hover { color: var(--gold); }
 
 /* ---------- Cookie banner ---------- */
-.cookie-banner { position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 2500; max-width: 760px; margin: 0 auto; background: #14382f; color: #fff; border-radius: 18px; padding: 18px 20px; box-shadow: 0 18px 50px rgba(0,0,0,.35); display: flex; gap: 16px; align-items: center; flex-wrap: wrap; transform: translateY(140%); transition: transform .5s cubic-bezier(.2,.8,.2,1); }
+.cookie-banner { position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 2500; max-width: 760px; margin: 0 auto; background: #041a3b; color: #fff; border-radius: 18px; padding: 18px 20px; box-shadow: 0 18px 50px rgba(0,0,0,.35); display: flex; gap: 16px; align-items: center; flex-wrap: wrap; transform: translateY(140%); transition: transform .5s cubic-bezier(.2,.8,.2,1); }
 .cookie-banner.show { transform: none; }
 .cookie-banner p { flex: 1 1 280px; font-size: 13.5px; line-height: 1.55; color: rgba(255,255,255,.88); margin: 0; }
 .cookie-banner a { color: var(--gold); text-decoration: underline; }
 .cookie-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .cookie-actions button { cursor: pointer; border-radius: 100px; padding: 10px 18px; font: 700 13.5px var(--font-display); border: 1.5px solid rgba(255,255,255,.35); background: transparent; color: #fff; }
-.cookie-actions button.primary { background: var(--gold); border-color: var(--gold); color: #1c2623; }
+.cookie-actions button.primary { background: var(--gold); border-color: var(--gold); color: #0d1d3e; }
 
 /* ---------- Legal pages ---------- */
-.legal-top { background: #14382f; padding: 14px 0; position: sticky; top: 0; z-index: 50; }
+.legal-top { background: #041a3b; padding: 14px 0; position: sticky; top: 0; z-index: 50; }
 .legal-top .container { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .legal-top .logo { font-size: 18px; }
 .legal-nav { display: flex; gap: 6px; flex-wrap: wrap; }

@@ -17,11 +17,6 @@ const SITE_CONFIG = {
   // 👇 PASTE YOUR INSTAGRAM PAGE LINK HERE (example: https://www.instagram.com/yourname). Until you do, every Instagram button stays hidden.
   instagramUrl: 'https://www.instagram.com/topjobsseekers?xtok=ZGpoaHN1eXZjNzg=',
 
-  // Hero background video. Leave heroVideoUrl empty to auto-pick a short free Pexels video (uses your Pexels key),
-  // or paste a direct .mp4 link / a file you upload to the repo, e.g. 'videos/hero.mp4'.
-  heroVideoUrl: '',
-  heroVideoQuery: 'airplane wing clouds sky travel',
-
   // Jobs come only from your Dashboard (Post a Job, Quick Post, Hot Alert). Leave false so any leftover
   // Jooble / auto-fetched rows in the database never show on the site.
   showAutoFetchedJobs: false,

@@ -54,7 +54,7 @@ a, button, [role="button"], .job-card { touch-action: manipulation; -webkit-tap-
 @media (max-width: 480px) { .wa-fab { right: 12px; bottom: 16px; width: 56px; height: 56px; } .back-top { right: 16px; bottom: 86px; } }
 
 /* ---------- 5. Countries: ripple rain ---------- */
-.rain-strip { position: relative; overflow: hidden; isolation: isolate; padding: 30px 0 38px; background: radial-gradient(120% 140% at 50% 0%, #2a7566 0%, #1F5C52 55%, #17453D 100%); }
+.rain-strip { position: relative; overflow: hidden; isolation: isolate; padding: 30px 0 38px; background: radial-gradient(120% 140% at 50% 0%, #0e458a 0%, #0b2f63 55%, #061f45 100%); }
 .rain-title { position: relative; z-index: 2; text-align: center; margin-bottom: 20px; color: rgba(255, 255, 255, .72); font: 700 11px/1 var(--font-display, sans-serif); letter-spacing: 2.4px; text-transform: uppercase; }
 .rain-grid { position: relative; z-index: 2; display: flex; flex-wrap: wrap; justify-content: center; gap: 14px 10px; max-width: 780px; margin: 0 auto; padding: 0 16px; }
 .rain-chip { position: relative; display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 100px; font-weight: 600; font-size: 14px; color: #fff; background: rgba(255, 255, 255, .11); border: 1px solid rgba(255, 255, 255, .24); opacity: 0; transform: translate3d(0, -80px, 0) scale(.85); }

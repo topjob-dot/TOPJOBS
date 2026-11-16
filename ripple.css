@@ -1,56 +1,40 @@
 /* =====================================================================
    ripple.css (home page, loaded after smooth.css)
-   1. Bubble buttons   2. Ripple on category cards + the two form blocks
-   3. Hero video       4. Glowing Instagram button (left, opposite WhatsApp)
+   1. Pill-shaped buttons  2. Job-category bubbles (same size/drop as the countries)
+   3. Instagram button (top right, glowing)
    ===================================================================== */
-:root { --rip-c: rgba(31, 92, 82, .4); }
-html[data-theme="dark"] { --rip-c: rgba(255, 255, 255, .38); }
 
-/* ---------- 1. Bubble buttons (same shape as the country bubbles) ---------- */
+/* ---------- 1. Pill-shaped buttons ---------- */
 .btn, .jobs-tab, .cat-go, .btn-apply, .btn-whatsapp-nav, .btn-ghost-dark { border-radius: 100px !important; }
 .btn-ghost, .btn-outline, .btn-ghost-dark { background-color: rgba(255, 255, 255, .11); }
 .btn-primary, .btn-whatsapp, .btn-whatsapp-nav { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .25); }
 .choice-card { border-radius: 30px !important; }
 .btn-full { justify-content: center; }
-.tjs-ring { position: absolute; z-index: 9990; pointer-events: none; width: var(--w, 24px); height: calc(var(--w, 24px) * .36); margin-left: calc(var(--w, 24px) / -2); border: 1.5px solid rgba(255, 255, 255, .75); box-shadow: 0 0 0 1px rgba(31, 92, 82, .28); border-radius: 50%; opacity: 0; animation: ring 1.4s ease-out forwards; }
-.tjs-ring.fx { position: fixed; }
 
-/* ---------- 2. Ripple on cards / form blocks ---------- */
-.rip-host { position: relative; isolation: isolate; }
-.rip-layer { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; border-radius: inherit; }
-.rip-ring { position: absolute; width: 30px; height: 11px; margin: -5px 0 0 -15px; border: 1.5px solid var(--rip-c); border-radius: 50%; opacity: 0; animation: ripRing 1.6s ease-out forwards; }
-.rip-drop { position: absolute; top: -20px; width: 2px; height: 16px; border-radius: 2px; background: linear-gradient(to bottom, transparent, var(--rip-c)); animation: dropFall var(--t, .75s) cubic-bezier(.4, 0, 1, 1) forwards; }
-@keyframes ripRing { 0% { opacity: .95; transform: scale(.3); } 100% { opacity: 0; transform: scale(calc(var(--k, 1) * 4.6), calc(var(--k, 1) * 3.2)); } }
+/* ---------- 2. Category bubbles: same size as the country bubbles, same drop (replays up and down) ---------- */
+.cat-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px 10px; max-width: 780px; margin: 0 auto; padding: 0 8px; }
+.cat-chip { display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 100px; font-weight: 600; font-size: 14px; color: var(--navy); background: var(--blue-light); border: 1px solid rgba(11, 47, 99, .2); cursor: pointer; user-select: none; opacity: 0; transform: translate3d(0, -80px, 0) scale(.85); transition: border-color .2s ease, background .2s ease; }
+.cat-chip > i { color: var(--c, var(--blue)); font-size: 15px; width: 18px; text-align: center; }
+.cat-chip .cat-count { min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; display: inline-grid; place-items: center; font-size: 12px; font-weight: 700; color: #06224a; background: var(--gold); }
+.cat-chip .cat-count.none { background: rgba(11, 47, 99, .12); color: var(--text-muted); }
+.cat-chip:hover { border-color: var(--gold); }
+.cat-chip:active { scale: .93; }
+.cat-chips.go .cat-chip { animation: chipDrop .95s cubic-bezier(.34, 1.56, .64, 1) forwards; animation-delay: calc(var(--i) * 130ms); }
+html[data-theme="dark"] .cat-chip { background: #102244; color: #e6ecf7; border-color: #1e3355; }
 
-/* category cards: drop in like the country bubbles, then rings spread underneath (replays up and down) */
-.rip-ready .rip-host[data-rip="card"]:not(.rip-in) { translate: 0 -52px; scale: .92; }
-.rip-host[data-rip="card"].rip-in { animation: cardDrop .95s cubic-bezier(.34, 1.56, .64, 1) both; animation-delay: var(--d, 0ms); }
-@keyframes cardDrop { 0% { translate: 0 -52px; scale: .92; } 100% { translate: 0 0; scale: 1; } }
-.rip-host[data-rip="card"] .rip-layer::before, .rip-host[data-rip="card"] .rip-layer::after { content: ""; position: absolute; left: 50%; bottom: 14px; width: 26%; height: 9%; margin-left: -13%; border: 1.5px solid var(--rip-c); border-radius: 50%; opacity: 0; }
-.rip-host[data-rip="card"].rip-in .rip-layer::before { animation: ripRing 1.6s ease-out both; animation-delay: calc(var(--d, 0ms) + 560ms); }
-.rip-host[data-rip="card"].rip-in .rip-layer::after { animation: ripRing 1.6s ease-out both; animation-delay: calc(var(--d, 0ms) + 860ms); }
-.cat-card, .rain-chip { cursor: pointer; }
-.rain-chip:active { scale: .93; }
-
-/* ---------- 3. Hero video ---------- */
-.hero-video-wrap { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
-.hero-video { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1.2s ease; }
-.hero-video.playing { opacity: 1; }
-.hero-video-shade { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(27, 59, 52, .9) 0%, rgba(31, 92, 82, .74) 50%, rgba(10, 22, 40, .8) 100%); }
-
-/* ---------- 4. Glowing Instagram button (left side, pulses in turn with WhatsApp) ---------- */
-.ig-fab { position: fixed; left: 14px; bottom: 20px; z-index: 1200; width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-size: 30px; background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); box-shadow: 0 8px 22px rgba(214, 36, 159, .45); transition: transform .3s var(--spring, ease); }
+/* ---------- 3. Instagram button: top right (where the chat button was), chat button sits below it ---------- */
+.ig-fab { position: fixed; right: 28px; top: 88px; z-index: 1200; width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-size: 30px; background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); box-shadow: 0 8px 22px rgba(214, 36, 159, .45); transition: transform .3s var(--spring, ease); }
 .ig-fab:hover, .ig-fab:focus-visible { transform: scale(1.08); }
 .ig-fab:active { transform: scale(.94); }
-.ig-fab::before, .ig-fab::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fd5949 45%, #d6249f 60%, #285AEB 90%); z-index: -1; animation: waGlow 2.4s ease-out infinite; animation-delay: .6s; }
-.ig-fab::after { animation-delay: 1.8s; }
-.ig-tip { position: absolute; left: 70px; top: 50%; transform: translate(-10px, -50%); white-space: nowrap; background: #fff; color: #1b3a33; font: 700 13px var(--font, sans-serif); padding: 9px 14px; border-radius: 100px; box-shadow: 0 8px 24px rgba(0, 0, 0, .18); opacity: 0; pointer-events: none; transition: opacity .4s ease, transform .4s var(--spring, ease); }
+.ig-fab::before, .ig-fab::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fd5949 45%, #d6249f 60%, #285AEB 90%); z-index: -1; animation: waGlow 2.4s ease-out infinite; }
+.ig-fab::after { animation-delay: 1.2s; }
+.ig-tip { position: absolute; right: 68px; top: 50%; transform: translate(10px, -50%); white-space: nowrap; background: #fff; color: #1b2b4a; font: 700 13px var(--font, sans-serif); padding: 9px 14px; border-radius: 100px; box-shadow: 0 8px 24px rgba(0, 0, 0, .18); opacity: 0; pointer-events: none; transition: opacity .4s ease, transform .4s var(--spring, ease); }
 .ig-tip.show { opacity: 1; transform: translate(0, -50%); }
-@media (max-width: 480px) { .ig-fab { left: 12px; bottom: 16px; width: 56px; height: 56px; } }
+.chat-toggle-btn { top: 156px !important; }
+.chat-panel { top: 220px !important; }
+@media (max-width: 480px) { .ig-fab { right: 22px; } .chat-toggle-btn { right: 22px !important; } .chat-panel { right: 12px !important; } }
 
 @media (prefers-reduced-motion: reduce) {
-  .rip-ready .rip-host[data-rip="card"]:not(.rip-in) { translate: none; scale: 1; }
-  .rip-host[data-rip="card"].rip-in { animation: none; }
-  .rip-ring, .rip-drop, .tjs-ring, .ig-fab::before, .ig-fab::after, .rip-layer::before, .rip-layer::after { display: none !important; }
-  .hero-video-wrap { display: none; }
+  .cat-chip { opacity: 1 !important; transform: none !important; animation: none !important; }
+  .ig-fab::before, .ig-fab::after { display: none !important; }
 }

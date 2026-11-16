@@ -181,11 +181,11 @@ function updateCounts() {
   set('heroKenyaCount', k ? plural(k) : 'Browse local roles');
   set('heroIntlCount', i ? plural(i) : 'Browse overseas roles');
   if (JOBS.length) set('heroJobTag', `${JOBS.length} open jobs`);
-  document.querySelectorAll('.cat-card').forEach((card) => {
+  document.querySelectorAll('.cat-card, .cat-chip').forEach((card) => {
     const n = JOBS.filter((j) => j.category === categoryKey(card.dataset.category)).length;
     const el = card.querySelector('.cat-count');
     if (!el) return;
-    el.textContent = n ? plural(n) : 'No open roles right now';
+    el.textContent = card.classList.contains('cat-chip') ? String(n) : (n ? plural(n) : 'No open roles right now');
     el.classList.toggle('none', !n);
   });
 }

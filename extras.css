@@ -1,13 +1,13 @@
 /* ===== extras.css: theme, loader, click effects, bell, payments (generated dark rules at the bottom) ===== */
-html[data-theme="dark"]{color-scheme:dark;--blue-pale:#0e1513;--blue-light:#1b2b27;--text:#e5ece9;--text-muted:#9db0a9;--border:#2a3a36;--shadow:0 4px 24px rgba(0,0,0,.45);--surface:#17211e;--heading:#d3ece4}
+html[data-theme="dark"]{color-scheme:dark;--blue-pale:#060f22;--blue-light:#102244;--text:#e6ecf7;--text-muted:#9fb0cc;--border:#1e3355;--shadow:0 4px 24px rgba(0,0,0,.45);--surface:#0b1a38;--heading:#dbe6f8}
 html[data-theme="dark"] body{background:var(--blue-pale);color:var(--text)}
-html[data-theme="dark"] input,html[data-theme="dark"] select,html[data-theme="dark"] textarea{background:#0e1513;color:var(--text);border-color:var(--border)}
+html[data-theme="dark"] input,html[data-theme="dark"] select,html[data-theme="dark"] textarea{background:#060f22;color:var(--text);border-color:var(--border)}
 /* loader */
-#pageLoader{position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;background:#17453D;transition:opacity .45s ease,visibility .45s}
+#pageLoader{position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;background:#061f45;transition:opacity .45s ease,visibility .45s}
 #pageLoader.done{opacity:0;visibility:hidden;pointer-events:none}
-#pageLoader .ld-ring{width:64px;height:64px;border-radius:50%;border:5px solid rgba(255,255,255,.18);border-top-color:#E8A33D;animation:ldspin .9s linear infinite}
+#pageLoader .ld-ring{width:64px;height:64px;border-radius:50%;border:5px solid rgba(255,255,255,.18);border-top-color:#d9962f;animation:ldspin .9s linear infinite}
 #pageLoader .ld-brand{font:800 22px/1 var(--font-display,sans-serif);letter-spacing:.5px;color:#fff;animation:ldpulse 1.4s ease-in-out infinite}
-#pageLoader .ld-brand span{color:#E8A33D}
+#pageLoader .ld-brand span{color:#d9962f}
 @keyframes ldspin{to{transform:rotate(360deg)}}@keyframes ldpulse{50%{opacity:.55;transform:scale(.97)}}
 /* press / hover effect on everything clickable */
 .btn,button,[role=button],[data-wa],.social-links a,.cat-card,.step-card,.faq-q,.job-card,.placement-card,.auth-tab,.role-option,.file-drop,.nav-fab,.xt-btn,.drawer-links a{transition:transform .16s ease,box-shadow .2s ease,filter .2s ease;-webkit-tap-highlight-color:transparent}
@@ -28,7 +28,7 @@ html[data-theme="dark"] .xt-panel{background:var(--surface)}
 .xt-panel h4{margin:0;padding:12px 14px;font-size:14px;border-bottom:1px solid var(--border);color:var(--navy)}
 .xt-item{display:block;padding:11px 14px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text)}
 .xt-item b{display:block;font-size:13px}.xt-item span{color:var(--text-muted);font-size:12px}
-.xt-item.unread{background:var(--blue-light)}.xt-item i{margin-right:6px;color:var(--gold,#E8A33D)}
+.xt-item.unread{background:var(--blue-light)}.xt-item i{margin-right:6px;color:var(--gold,#d9962f)}
 .xt-empty{padding:18px;text-align:center;color:var(--text-muted);font-size:13px}
 .xt-auth-theme{position:fixed;top:14px;right:14px;z-index:50}
 /* sign-up button states */
@@ -112,7 +112,7 @@ html[data-theme="dark"] .trust-card h3{color:var(--heading)}
 .xt-wd-icon{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:#e6f7f1;color:#0a7c4e;font-size:20px;flex-shrink:0}
 .xt-link{background:none;border:0;color:var(--blue);font-weight:600;font-size:12px;padding:6px 0 0;cursor:pointer;font-family:inherit}
 .xt-wd-note{font-size:12.5px;color:var(--text-muted);margin:2px 0 14px}.xt-wd-note i{color:#0a7c4e;margin-right:6px}
-html[data-theme="dark"] .xt-wd-icon{background:#1b2b27;color:#5fd4a4}
+html[data-theme="dark"] .xt-wd-icon{background:#102244;color:#5fd4a4}
 
 /* home: theme button always visible at the top-right on phones/tablets (desktop nav has its own) */
 .xt-top-theme{display:none;position:fixed;top:12px;right:12px;z-index:1400;width:48px;height:48px;font-size:18px;background:var(--blue);color:#fff;border:1.5px solid rgba(232,163,61,.6);box-shadow:0 6px 18px rgba(0,0,0,.25)}

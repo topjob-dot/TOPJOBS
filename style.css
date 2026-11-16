@@ -1,18 +1,18 @@
 /* ====== CSS VARIABLES — warm & approachable palette ====== */
 :root {
-  --navy: #24463F;          /* deep warm teal-charcoal, replaces cold navy */
-  --blue: #1F5C52;          /* deep teal — primary brand color */
-  --blue-mid: #17453D;      /* darker teal for hover states */
-  --blue-light: #E3EFEC;    /* pale teal tint, for chips/backgrounds */
-  --blue-pale: #FBF6ED;     /* warm ivory — main page background */
-  --gold: #E8A33D;          /* warm amber accent */
+  --navy: #0b2a55;          /* deep warm teal-charcoal, replaces cold navy */
+  --blue: #0b2f63;          /* deep teal — primary brand color */
+  --blue-mid: #061f45;      /* darker teal for hover states */
+  --blue-light: #e6edf8;    /* pale teal tint, for chips/backgrounds */
+  --blue-pale: #f5f7fc;     /* warm ivory — main page background */
+  --gold: #d9962f;          /* warm amber accent */
   --coral: #D65B4A;         /* warm brick-coral, used sparingly (hot badges) */
   --white: #FFFFFF;
-  --text: #3B332A;          /* warm charcoal body text */
-  --text-muted: #8C7F6E;    /* warm muted grey-brown */
-  --border: #EAE0CF;        /* soft sand border */
-  --shadow: 0 4px 24px rgba(59,51,42,0.08);
-  --shadow-lg: 0 14px 40px rgba(36,70,63,0.16);
+  --text: #1f2a3d;          /* warm charcoal body text */
+  --text-muted: #6b7689;    /* warm muted grey-brown */
+  --border: #dde3ee;        /* soft sand border */
+  --shadow: 0 4px 24px rgba(10,32,70,0.08);
+  --shadow-lg: 0 14px 40px rgba(6,31,69,0.16);
   --radius: 14px;
   --radius-lg: 22px;
   --transition: 0.25s ease;
@@ -79,7 +79,7 @@ input, select, textarea, button { font-family: inherit; }
 
 .hero {
   min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
-  background: linear-gradient(135deg, #1B3B34 0%, #1F5C52 45%, #2C7A6C 100%);
+  background: linear-gradient(135deg, #031a3d 0%, #0b2f63 45%, #0b3d7a 100%);
   position: relative; overflow: hidden; padding-top: 80px;
 }
 .hero-bg-shapes { position: absolute; inset: 0; pointer-events: none; }
